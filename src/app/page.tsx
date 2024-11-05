@@ -10,6 +10,10 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { ArbitrageRequest, ArbitrageResponse, Market } from '../lib/types';
 import Image from "next/image"
 import BrokerSelect from '@/components/broker-select';
+import Credit from '@/components/credit';
+import { AdditionalInformation } from '@/components/additional-info';
+import EmailSubscription from '@/components/email-input';
+import Icon from '@/components/icon';
 
 const initialMarket: Market = {
   id: '1',
@@ -191,19 +195,25 @@ export default function Home() {
   };
 
   return (
-    <div className="sm:grid grid-cols-[50%_50%] h-screen">
-      <Card className="mb-8 border-r-[0.5px] border-black/40">
-        <CardHeader>
-        <Input 
-          placeholder="Enter market title"
-          value={marketTitle} 
-          onChange={(e) => updateMarketTitle(e.target.value)} 
-          className="text-2xl border-[0.5px] py-8 focus:ring-0 focus:outline-none shadow-none"
-        />
-        </CardHeader>
+    <>
+
+    <div className="sm:grid grid-cols-[50%_50%] h-screen overflow-hidden">
+      <div className="overflow-y-auto h-screen"> 
+        <Card className="mb-8 border-r-[0.5px] border-black/40">
+          <CardHeader>
+            <div className="flex flex-row items-center pb-4"><Icon></Icon><div className="text-[22px]">Event Contract Arbitrage Calculator</div></div>
+          </CardHeader>
         <CardContent>
           <div className="space-y-6">
             <div className="flex flex-col">
+              <div className='py-4'>
+                <Input 
+                  placeholder="Enter market title"
+                  value={marketTitle} 
+                  onChange={(e) => updateMarketTitle(e.target.value)} 
+                  className="text-2xl border-[0.5px] py-8 focus:ring-0 focus:outline-none shadow-none"
+                />
+              </div>
               {markets.map((market, index) => (
                 <Card key={market.id} className="mb-4 bg-[#F6F6F6]/60 p-6 rounded-xl">
                   <div className="space-y-4">
@@ -451,6 +461,19 @@ export default function Home() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    
+      <div className='h-screen flex flex-col'>
+      <div className='flex-1 flex flex-col items-center justify-center'>
+        <EmailSubscription />
+        <AdditionalInformation />
+      </div>
+    
+      <div className='flex justify-center w-full pb-4'>
+        <Credit />
+      </div>
+  </div>
+</div>
+    </>
   );
 }

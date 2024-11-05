@@ -34,7 +34,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
       { status: 500 }
     );
   }
-}
+  }
 
 
 interface CoinGeckoResponse {
@@ -97,7 +97,6 @@ async function convertGasPriceToUSDC(gasPriceInGwei: number): Promise<number> {
   }
 }
 
-
 interface Position {
   candidate: string;
   position: 'Yes' | 'No';
@@ -105,7 +104,7 @@ interface Position {
   price: number;
 }
 
-export function calculateArbitrage(markets: Market[]): ArbitrageResponse {
+function calculateArbitrage(markets: Market[]): ArbitrageResponse {
   // Helper function to standardize candidate names
   function getCandidateName(name: string): string {
       // Extract candidate's name by removing any market-specific suffixes or prefixes
