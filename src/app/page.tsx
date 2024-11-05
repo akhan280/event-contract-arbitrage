@@ -206,12 +206,12 @@ export default function Home() {
         <CardContent>
           <div className="space-y-6">
             <div className="flex flex-col">
-              <div className='py-4'>
+            <div className='py-4'>
                 <Input 
                   placeholder="Enter market title"
                   value={marketTitle} 
                   onChange={(e) => updateMarketTitle(e.target.value)} 
-                  className="text-2xl border-[0.5px] py-8 focus:ring-0 focus:outline-none shadow-none"
+                  className="text-2xl py-8 border-0 focus:ring-0 focus:outline-none shadow-none hover:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
               </div>
               {markets.map((market, index) => (
@@ -464,15 +464,18 @@ export default function Home() {
       </div>
     
       <div className='h-screen flex flex-col'>
-      <div className='flex-1 flex flex-col items-center justify-center'>
-        <EmailSubscription />
-        <AdditionalInformation />
-      </div>
-    
-      <div className='flex justify-center w-full pb-4'>
-        <Credit />
-      </div>
+  <div className='flex-1 flex flex-col justify-evenly items-center'>
+    <div className='p-4'>
+      <EmailSubscription />
+    </div>
+
+    <AdditionalInformation />
   </div>
+
+  <div className='flex justify-center w-full pb-4'>
+    <Credit />
+  </div>
+</div>
 </div>
     </>
   );

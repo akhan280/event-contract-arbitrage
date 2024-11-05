@@ -7,6 +7,7 @@ import {
   
   export function AdditionalInformation() {
     return (
+
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="item-1">
           <AccordionTrigger>How to guide</AccordionTrigger>
