@@ -4,7 +4,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 export default function Credit() {
   return (
     <div className="flex flex-row items-center justify-center  gap-3 p-7 max-w-lg z-20">
-      <div>Crafted by</div>
+      <div>Created by</div>
       <a 
         href="https://x.com/areebkhan280" 
         target="_blank" 

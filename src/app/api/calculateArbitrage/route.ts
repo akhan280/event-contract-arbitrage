@@ -26,6 +26,7 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     const arbitrageResults: ArbitrageResponse = calculateArbitrage(markets);
     console.log("[Arbitrage results]", arbitrageResults)
+    
     return NextResponse.json({ success: true, data: arbitrageResults });
   } catch (error) {
     console.error('Error:', error);

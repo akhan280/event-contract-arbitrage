@@ -1,14 +1,15 @@
 
 import { NextRequest } from 'next/server';
 import { Resend } from 'resend';
+import { PrismaClient } from '@prisma/client'
 
 const resend = new Resend(process.env.RESEND_API_KEY);
+const prisma = new PrismaClient()
 
 export async function POST(req: NextRequest) {
   try {
     const { email } = await req.json();
 
-    // Send confirmation email
     const response = await resend.emails.send({
       from: 'Arbitrage Alerts <alerts@eventarb.com>',
       to: email,
@@ -20,8 +21,12 @@ export async function POST(req: NextRequest) {
       `
     });
     
-    // Here you would typically also save the email to your database
-    
+    const prismaResponse = await prisma.eventarbemails.create({
+      data: {
+        email: email
+      }
+    })
+
     return new Response(JSON.stringify({ message: 'Subscribed successfully' }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },

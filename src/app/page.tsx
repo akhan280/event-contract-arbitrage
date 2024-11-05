@@ -497,12 +497,16 @@ export default function Home() {
       </Card>
       </div>
     
+
+
+
+
+  
       <div className='h-screen flex flex-col'>
         <div className='flex-1 flex flex-col justify-evenly items-center'>
           <div className='p-4'>
             <EmailSubscription />
           </div>
-
           <AdditionalInformation />
         </div>
 
