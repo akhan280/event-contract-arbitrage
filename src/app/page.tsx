@@ -26,6 +26,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
+import { Label } from "../components/ui/label";
+import Header from "../components/header";
 
 const initialMarket: Market = {
   id: "1",
@@ -53,6 +55,8 @@ export default function Home() {
   const [globalMarketType, setGlobalMarketType] = useState<"binary" | "multi">(
     "binary"
   );
+  const [dte, setDte] = useState<number>(0);
+  const [principal, setPrincipal] = useState<number>(0);
 
   const updateAllMarketTypes = (type: "binary" | "multi") => {
     setGlobalMarketType(type);
@@ -171,7 +175,12 @@ export default function Home() {
     if (!markets.some((m) => m.title)) {
       return "Please enter a market title";
     }
-
+    if (dte < 0) {
+      return "Days to expiration must be 0 or greater";
+    }
+    if (principal <= 0) {
+      return "Principal amount must be greater than 0";
+    }
     if (
       !markets.some((m) =>
         m.options.some(
@@ -185,7 +194,6 @@ export default function Home() {
     ) {
       return "Please enter at least one price";
     }
-
     return "";
   };
 
@@ -242,7 +250,11 @@ export default function Home() {
       const response = await fetch("/api/calculateArbitrage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ markets: marketData } as ArbitrageRequest),
+        body: JSON.stringify({
+          markets: marketData,
+          dte: dte,
+          principal: principal,
+        } as ArbitrageRequest),
       });
 
       const data = await response.json();
@@ -259,20 +271,73 @@ export default function Home() {
 
   return (
     <>
-      <div className="sm:grid grid-cols-[60%_40%] h-screen overflow-hidden">
-        <div className="overflow-y-auto h-screen border-r-[0.5px] border-black/20">
+      <div className="flex flex-col sm:grid sm:grid-cols-[40%_60%] min-h-screen sm:h-screen sm:overflow-hidden">
+        <div className="order-2 sm:order-1 min-h-screen sm:h-screen flex flex-col">
+          <div className="hidden sm:block">
+            <Header />
+          </div>
+          <div className="flex-1 flex flex-col justify-evenly items-center">
+            <AdditionalInformation />
+            <div className="p-4">
+              <EmailSubscription />
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center w-full mb-6">
+            <Credit />
+          </div>
+        </div>
+        <div className="order-1 sm:order-2 overflow-y-auto border-t sm:border-t-0 sm:border-l border-black/20">
           <Card className="mb-8 ">
-            <CardHeader></CardHeader>
+            <CardHeader>
+              {" "}
+              <div className="sm:hidden">
+                <Header />
+              </div>
+            </CardHeader>
             <CardContent>
               <div className="space-y-6">
-                <div className="flex flex-col">
-                  <div className="py-4">
+                <div className="flex flex-col gap-7">
+                  <div className="flex flex-row py-4 border-b border-black/5">
                     <Input
                       placeholder="Enter market title"
                       value={marketTitle}
                       onChange={(e) => updateMarketTitle(e.target.value)}
-                      className="text-2xl py-8 border-0 focus:ring-0 focus:outline-none shadow-none hover:border-0 focus-visible:ring-0 focus-visible:ring-offset-0"
+                      className="text-2xl py-8 border-0 focus:ring-0 focus:outline-none shadow-none hover:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
                     />
+                    <div className="flex flex-row gap-4">
+                      <div className="w-fit">
+                        <Label className="text-xs">
+                          Contract length &#40;days&#41;
+                        </Label>
+                        <Input
+                          value={dte}
+                          onChange={(e) =>
+                            setDte(Math.max(0, parseInt(e.target.value) || 0))
+                          }
+                          className="text-sm w-32 rounded-xl"
+                          placeholder="Days to Expiration"
+                        />
+                      </div>
+                      <div className="w-fit">
+                        <Label className="text-xs">Principal Amount</Label>
+                        <div className="relative">
+                          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
+                            $
+                          </span>
+                          <Input
+                            min="0"
+                            value={principal}
+                            onChange={(e) =>
+                              setPrincipal(
+                                Math.max(0, parseFloat(e.target.value) || 0)
+                              )
+                            }
+                            className="text-sm w-32 pl-6 rounded-xl"
+                            placeholder="Principal Amount"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                   {markets.map((market, index) => (
                     <Card
@@ -332,9 +397,9 @@ export default function Home() {
 
                         <Tabs defaultValue="buy">
                           {/* <TabsList>
-                        <TabsTrigger value="buy">Buy Prices</TabsTrigger>
-                        <TabsTrigger value="sell">Sell Prices</TabsTrigger>
-                      </TabsList> */}
+                      <TabsTrigger value="buy">Buy Prices</TabsTrigger>
+                      <TabsTrigger value="sell">Sell Prices</TabsTrigger>
+                    </TabsList> */}
                           <TabsContent value="buy">
                             <div className="space-y-4">
                               {market.options.map((option) => (
@@ -596,7 +661,7 @@ export default function Home() {
                   </Alert>
                 )}
 
-                <div className="text-xl w-fit pt-8 p-2 rounded-2xl">
+                <div className="text-2xl w-fit pt-8 p-2 rounded-2xl">
                   Arbitrage Opportunities:
                 </div>
                 {outcome && (
@@ -642,40 +707,6 @@ export default function Home() {
               </div>
             </CardContent>
           </Card>
-        </div>
-
-        <div className="h-screen flex flex-col">
-          
-          <div className="flex flex-col justify-start p-6 gap-3 bg-slate-400/5">
-            
-            <div className="flex flex-row items-center gap-2">
-              <Icon></Icon>
-              <div className="text-[22px]">
-                Event Contract Arbitrage Calculator
-              </div>
-            </div>
-            <div className="flex flex-col gap-2">
-              <div className="text-gray-700">
-                Leverage price discrepancies in prediction markets like Kalshi,
-                Polymarket, Robinhood and more for guaranteed profit. Examine opportunity cost, spreads with fees included and more.
-              </div>
-              <div className="text-gray-700">
-                If this was helpful for you, <a href="https://buymeacoffee.com/areebkhan2c"><u>please consider buying us a coffee!</u></a>
-              </div>
-            </div>
-
-          </div>
-          
-          <div className="flex-1 flex flex-col justify-evenly items-center">
-            <div className="p-4">
-              <EmailSubscription />
-            </div>
-              <AdditionalInformation />
-          </div>
-          <div className="flex flex-col items-center justify-center w-full mb-6">
-            <Credit />
-          </div>
-          
         </div>
       </div>
     </>

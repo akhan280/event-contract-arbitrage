@@ -39,4 +39,6 @@ export interface ArbitrageResponse {
 
 export interface ArbitrageRequest {
     markets: Market[];
+    dte: number;
+    principal: number
 }
