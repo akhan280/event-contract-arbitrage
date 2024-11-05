@@ -10,7 +10,7 @@ export async function POST(req: NextRequest) {
 
     // Send confirmation email
     const response = await resend.emails.send({
-      from: 'Arbitrage Alerts <alerts@yourdomain.com>',
+      from: 'Arbitrage Alerts <alerts@eventarb.com>',
       to: email,
       subject: 'Welcome to Arbitrage Alerts',
       html: `
