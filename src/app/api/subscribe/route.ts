@@ -19,8 +19,7 @@ export async function POST(req: NextRequest) {
         <p>If you didn't sign up for this service, please ignore this email.</p>
       `
     });
-    console.log("resposne", response)
-
+    
     // Here you would typically also save the email to your database
     
     return new Response(JSON.stringify({ message: 'Subscribed successfully' }), {
