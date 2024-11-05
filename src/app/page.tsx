@@ -14,6 +14,7 @@ import Credit from '@/components/credit';
 import { AdditionalInformation } from '@/components/additional-info';
 import EmailSubscription from '@/components/email-input';
 import Icon from '@/components/icon';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip';
 
 const initialMarket: Market = {
   id: '1',
@@ -30,12 +31,38 @@ const initialMarket: Market = {
   }]
 };
 
+
 export default function Home() {
   const [markets, setMarkets] = useState<Market[]>([initialMarket]);
-  const [outcome, setOutcome] = useState<ArbitrageResponse| null>(null);
+  const [outcome, setOutcome] = useState<ArbitrageResponse | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [marketTitle, setMarketTitle] = useState('');
+  const [globalMarketType, setGlobalMarketType] = useState<'binary' | 'multi'>('binary');
+
+  const updateAllMarketTypes = (type: 'binary' | 'multi') => {
+    setGlobalMarketType(type);
+    setMarkets(markets.map(market => ({
+      ...market,
+      type,
+      options: type === 'multi' 
+        ? market.options.length < 2 
+          ? [
+              ...market.options,
+              {
+                id: Math.random().toString(),
+                name: 'Option 2',
+                prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } }
+              }
+            ]
+          : market.options
+        : [{
+            id: '1',
+            name: marketTitle,
+            prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } }
+          }]
+    })));
+  };
 
   const formatNumberInput = (value: string): number => {
     const cleanedValue = value.replace(/[^\d.]/g, '');
@@ -53,76 +80,70 @@ export default function Home() {
     })));
   };
 
+  const updateOptionNameAcrossMarkets = (optionIndex: number, newName: string) => {
+    setMarkets(markets.map(market => ({
+      ...market,
+      options: market.options.map((option, index) => 
+        index === optionIndex 
+          ? { ...option, name: newName }
+          : option
+      )
+    })));
+  };
+
   const addMarket = () => {
-    setMarkets([...markets, {
+    const newMarket = {
       id: Math.random().toString(),
-      title: '',
-      broker: 'Polymarket',
-      type: 'binary',
-      options: [{
-        id: Math.random().toString(),
-        name: 'Option 1',
-        prices: {
-          buy: { yes: 0, no: 0 },
-          sell: { yes: 0, no: 0 }
-        }
-      }]
-    }]);
+      title: marketTitle,
+      broker: 'Kalshi',
+      type: globalMarketType,
+      options: globalMarketType === 'binary'
+        ? [{
+            id: Math.random().toString(),
+            name: marketTitle,
+            prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } }
+          }]
+        : markets[0].options.map(option => ({
+            id: Math.random().toString(),
+            name: option.name,
+            prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } }
+          }))
+    };
+    setMarkets([...markets, newMarket]);
   };
 
   const addOption = (marketId: string) => {
-    setMarkets(markets.map(market => {
-      if (market.id === marketId) {
-        return {
-          ...market,
-          type: 'multi',
-          options: [...market.options, {
-            id: Math.random().toString(),
-            name: `Option ${market.options.length + 1}`,
-            prices: {
-              buy: { yes: 0, no: 0 },
-              sell: { yes: 0, no: 0 }
-            }
-          }]
-        };
-      }
-      return market;
-    }));
+    const newOption = {
+      id: Math.random().toString(),
+      name: `Option ${markets[0].options.length + 1}`,
+      prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } }
+    };
+    
+    setMarkets(markets.map(market => ({
+      ...market,
+      options: [...market.options, newOption]
+    })));
   };
 
-  const removeOption = (marketId: string, optionId: string) => {
-    setMarkets(markets.map(market => {
-      if (market.id === marketId && market.options.length > 1) {
-        return {
-          ...market,
-          options: market.options.filter(opt => opt.id !== optionId)
-        };
-      }
-      return market;
-    }));
+  const removeOption = (marketId: string, optionIndex: number) => {
+    setMarkets(markets.map(market => ({
+      ...market,
+      options: market.options.filter((_, index) => index !== optionIndex)
+    })));
   };
 
-  const updateMarketType = (marketId: string, type: 'binary' | 'multi') => {
-    setMarkets(markets.map(market => {
-      if (market.id === marketId) {
-        if (type === 'binary') {
-          return {
-            ...market,
-            type,
-            options: [{
-              id: '1',
-              name: `${marketTitle}`,
-              prices: {
-                buy: { yes: 0, no: 0 },
-                sell: { yes: 0, no: 0 }
-              }
-            }]
-          };
-        }
-        return { ...market, type };
-      }
-      return market;
-    }));
+  const getMissingRequirements = (markets: Market[]) => {
+    if (!markets.some(m => m.title)) {
+      return "Please enter a market title";
+    }
+    
+    if (!markets.some(m => m.options.some(o => 
+      (o.prices.buy.yes > 0 || o.prices.buy.no > 0) || (o.prices.sell.yes > 0 || o.prices.sell.no > 0)
+    ))) {
+      return "Please enter at least one price";
+    }
+  
+    return "";
   };
 
   const updateOptionPrice = (
@@ -133,7 +154,6 @@ export default function Home() {
     value: string
   ) => {
     const numValue = formatNumberInput(value);
-    
     setMarkets(markets.map(market => {
       if (market.id === marketId) {
         return {
@@ -144,10 +164,7 @@ export default function Home() {
                 ...option,
                 prices: {
                   ...option.prices,
-                  [type]: {
-                    ...option.prices[type],
-                    [side]: numValue
-                  }
+                  [type]: { ...option.prices[type], [side]: numValue }
                 }
               };
             }
@@ -218,16 +235,14 @@ export default function Home() {
                 <Card key={market.id} className="mb-4 bg-[#F6F6F6]/60 p-6 rounded-xl">
                   <div className="space-y-4">
                         <BrokerSelect 
-                          value={market.broker as 'Polymarket' | 'Kalshi'}
+                          value={market.broker as 'Polymarket' | 'Kalshi' | 'Robinhood'}
                           onChange={(value) => setMarkets(markets.map(m =>
                             m.id === market.id ? { ...m, broker: value } : m
                           ))}
                         />
 
                       <div className='flex flex-row justify-between items-center gap-2 w-full'>
-                        <Tabs defaultValue={market.type} onValueChange={(value: string) => 
-                          updateMarketType(market.id, value as 'binary' | 'multi')
-                        }>
+                        <Tabs value={globalMarketType} onValueChange={(value: string) => updateAllMarketTypes(value as 'binary' | 'multi')}>
                           <TabsList className='outline-none'>
                             <TabsTrigger value="binary">Binary Market</TabsTrigger>
                             <TabsTrigger value="multi">Multiple Choice</TabsTrigger>
@@ -260,14 +275,12 @@ export default function Home() {
                                 <div className="relative flex-1">
                                     <Input
                                       value={market.type === 'binary' ? marketTitle: option.name}
-                                      onChange={(e) => setMarkets(markets.map(m => 
-                                        m.id === market.id ? {
-                                          ...m,
-                                          options: m.options.map(o =>
-                                            o.id === option.id ? { ...o, name: e.target.value } : o
-                                          )
-                                        } : m
-                                      ))}
+                                      onChange={(e) => {
+                                        if (market.type === 'multi') {
+                                          const optionIndex = market.options.findIndex(o => o.id === option.id);
+                                          updateOptionNameAcrossMarkets(optionIndex, e.target.value);
+                                        }
+                                      }}
                                       className="pr-6 h-14 text-lg text-black"
                                       placeholder="Option name"
                                     />
@@ -287,18 +300,22 @@ export default function Home() {
                                       'yes',
                                       e.target.value
                                     )}
-                                    className={`pr-6 h-14 text-lg rounded-xl ${
+                                    className={`pr-6 h-14 text-lg rounded-xl [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none ${
                                       market.broker === 'Kalshi' 
-                                        ? 'text-[#22C55E]' // Kalshi green
-                                        : 'text-[#255CFF]' // Polymarket blue
-                                    }`}
+                                        ? 'text-[#22C55E]'
+                                        : market.broker === 'Polymarket'
+                                          ? 'text-[#255CFF]'
+                                          : 'text-black'
+                                    }`}                             
                                     placeholder="Yes Price"
                                   />
-                                  <span className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md text-white ${
+                                  <span className={`absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-md ${
                                       market.broker === 'Kalshi'
-                                        ? 'bg-[#22C55E]'  // Kalshi green background
-                                        : 'bg-[#255CFF]'  // Polymarket blue background
-                                    }`}>¢</span>                                
+                                        ? 'bg-[#22C55E] text-white'  // Kalshi green background
+                                        : market.broker === 'Polymarket'
+                                          ? 'bg-[#255CFF] text-white'  // Polymarket blue background
+                                          : 'bg-[#CCFF00] text-black'  // Robinhood color background
+                                  }`}>¢</span>                          
                                 </div>
                                 <div className="relative flex-1">
                                   <Input
@@ -323,26 +340,28 @@ export default function Home() {
                                   <Button
                                     variant="ghost"
                                     size="icon"
-                                    onClick={() => removeOption(market.id, option.id)}
-                                  >
+                                    onClick={() => {
+                                      const optionIndex = market.options.findIndex(o => o.id === option.id);
+                                      removeOption(market.id, optionIndex);
+                                    }}                                  >
                                     <Trash className="h-4 w-4" />
                                   </Button>
                                 )}
                               </div>
                             </div>
                           ))}
-                          {market.type === 'multi' && (
-                            <div className='flex items-center justify-center pt-8'>
-                            <Button
-                              onClick={() => addOption(market.id)}
-                              variant="outline"
-                              className=""
-                            >
-                              <Plus className="h-4 w-4 mr-2" />
-                              Add Option
-                            </Button>
-                            </div>
-                          )}
+                            {market.type === 'multi' && index === 0 && (
+                                <div className='flex items-center justify-center pt-8'>
+                                  <Button
+                                    onClick={() => addOption(market.id)}
+                                    variant="outline"
+                                    className=""
+                                  >
+                                    <Plus className="h-4 w-4 mr-2" />
+                                    Add Option
+                                  </Button>
+                                </div>
+                            )}
                         </div>
                       </TabsContent>
 
@@ -413,15 +432,30 @@ export default function Home() {
                 Add Another Market
               </Button>
 
-              <Button
-                onClick={handleCalculate}
-                disabled={loading || !markets.some(m => m.title && m.options.some(o => 
-                  (o.prices.buy.yes > 0 || o.prices.buy.no > 0) || (o.prices.sell.yes > 0 || o.prices.sell.no > 0)
-                ))}
-                className="w-full"
-              >
-                {loading ? 'Calculating...' : 'Calculate Arbitrage'}
-              </Button>
+              <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div className="w-full">
+                      <Button
+                        onClick={handleCalculate}
+                        disabled={loading || !markets.some(m => m.title && m.options.some(o => 
+                          (o.prices.buy.yes > 0 || o.prices.buy.no > 0) || (o.prices.sell.yes > 0 || o.prices.sell.no > 0)
+                        ))}
+                        className="w-full"
+                      >
+                        {loading ? 'Calculating...' : 'Calculate Arbitrage'}
+                      </Button>
+                    </div>
+                  </TooltipTrigger>
+                  {(loading || !markets.some(m => m.title && m.options.some(o => 
+                    (o.prices.buy.yes > 0 || o.prices.buy.no > 0) || (o.prices.sell.yes > 0 || o.prices.sell.no > 0)
+                  ))) && (
+                    <TooltipContent>
+                      <p>{loading ? 'Calculating...' : getMissingRequirements(markets)}</p>
+                    </TooltipContent>
+                  )}
+                </Tooltip>
+              </TooltipProvider>
             </div>
         
 
