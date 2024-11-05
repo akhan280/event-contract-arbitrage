@@ -11,21 +11,19 @@ import {
         <AccordionItem value="item-1">
           <AccordionTrigger>How to guide</AccordionTrigger>
           <AccordionContent>
-            Yes. It adheres to the WAI-ARIA design pattern.
+          Here is a <a href="https://docs.google.com/document/d/1C5DWdrFbJzoltCERUGBZfXsBLlUBKiLJoqwe-egIekg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">doc</a> explaining exactly how to use our calculator.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-2">
           <AccordionTrigger>The math</AccordionTrigger>
           <AccordionContent>
-            Yes. It comes with default styles that matches the other
-            components&apos; aesthetic.
+          Take a look at the math behind the arbitrage calculations here.
           </AccordionContent>
         </AccordionItem>
         <AccordionItem value="item-3">
           <AccordionTrigger>Contact / Report Bugs</AccordionTrigger>
           <AccordionContent>
-            Yes. It&apos;s animated by default, but you can disable it if you
-            prefer.
+          Submit any bugs you find or contact us here.
           </AccordionContent>
         </AccordionItem>
       </Accordion>
