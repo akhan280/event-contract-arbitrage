@@ -44,7 +44,7 @@ const EmailSubscription = () => {
 
   return (
     <div className="relative">
-      {/* Top-left triangle */}
+      {/* Top-left triangle
       <div 
         className="absolute -top-4 -left-6 w-16 h-16  z-20 transform rotate-60 bg-[#00D991]"
         style={{
@@ -52,13 +52,13 @@ const EmailSubscription = () => {
         }}
       />
       
-      {/* Bottom-right triangle */}
+      Bottom-right triangle
       <div 
         className="absolute -bottom-4 -right-2 w-16 h-16 transform rotate-60 z-20 bg-[#2563EB]"
         style={{
           clipPath: 'polygon(100% 100%, 0% 100%, 100% 0)',
         }}
-      />
+      /> */}
 
       <Card className="w-full max-w-md outline outline-[0.5px] outline-[#DEDEDE] rounded-[32px] bg-white relative z-10">
         <CardContent className="pt-6">
