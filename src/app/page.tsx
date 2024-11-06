@@ -6,20 +6,11 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Info, AlertCircle, DollarSign, Plus, Trash, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from "@/components/ui/select";
 import { ArbitrageRequest, ArbitrageResponse, Market } from "../lib/types";
-import Image from "next/image";
 import BrokerSelect from "@/components/broker-select";
 import Credit from "@/components/credit";
 import { AdditionalInformation } from "@/components/additional-info";
 import EmailSubscription from "@/components/email-input";
-import Icon from "@/components/icon";
 import {
   Tooltip,
   TooltipContent,
@@ -29,6 +20,7 @@ import {
 import { Label } from "../components/ui/label";
 import Header from "../components/header";
 import ArbitrageCard from "../components/arbitrage-card";
+import { toast } from "../hooks/use-toast";
 
 const initialMarket: Market = {
   id: "1",
@@ -110,10 +102,7 @@ export default function Home() {
     );
   };
 
-  const updateOptionNameAcrossMarkets = (
-    optionIndex: number,
-    newName: string
-  ) => {
+  const updateOptionNameAcrossMarkets = (optionIndex: number, newName: string) => {
     setMarkets(
       markets.map((market) => ({
         ...market,
@@ -231,8 +220,22 @@ export default function Home() {
   };
 
   const handleCalculate = async () => {
+    const validationErrors = validateInputs();
+    console.log("[HandleCalculate]", validationErrors)
+    if (validationErrors.length > 0) {
+      validationErrors.forEach((error) => {
+        toast({
+          variant: "destructive",
+          title: "Missing Requirements",
+          description: error,
+        });
+      });
+      return;
+    }
+
     setLoading(true);
     setError("");
+    
     try {
       const marketData: Market[] = markets.map((market) => ({
         id: market.id,
@@ -246,8 +249,6 @@ export default function Home() {
         })),
       }));
 
-      console.log("market data", marketData);
-
       const response = await fetch("/api/calculateArbitrage", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -259,15 +260,56 @@ export default function Home() {
       });
 
       const data = await response.json();
-      console.log("[Returned Data]", data);
       setOutcome(data.data as ArbitrageResponse);
-      console.log("[SetResults]", data.results);
+      
+      if (data.data.results.length === 0) {
+        toast({
+          title: "No Arbitrage Found",
+          description: "No profitable arbitrage opportunities were found with the current prices.",
+          variant: "default",
+        });
+      }
     } catch (err) {
-      setError(
-        "Failed to calculate arbitrage. Please check your input values."
-      );
+      setError("Failed to calculate arbitrage. Please check your input values.");
+      toast({
+        variant: "destructive",
+        title: "Calculation Error",
+        description: "Failed to calculate arbitrage. Please check your input values.",
+      });
     }
+    
     setLoading(false);
+  };
+
+
+  const validateInputs = (): string[] => {
+    const errors: string[] = [];
+    
+    if (!markets.some((m) => m.title)) {
+      errors.push("Please enter a market title");
+    }
+    
+    if (dte < 0) {
+      errors.push("Days to expiration must be 0 or greater");
+    }
+    
+    if (principal <= 0) {
+      errors.push("Principal amount must be greater than 0");
+    }
+    
+    if (!markets.some((m) => 
+      m.options.some(
+        (o) =>
+          o.prices.buy.yes > 0 ||
+          o.prices.buy.no > 0 ||
+          o.prices.sell.yes > 0 ||
+          o.prices.sell.no > 0
+      )
+    )) {
+      errors.push("Please enter at least one price");
+    }
+    
+    return errors;
   };
 
   return (
@@ -611,20 +653,7 @@ export default function Home() {
                         <div className="w-full">
                           <Button
                             onClick={handleCalculate}
-                            disabled={
-                              loading ||
-                              !markets.some(
-                                (m) =>
-                                  m.title &&
-                                  m.options.some(
-                                    (o) =>
-                                      o.prices.buy.yes > 0 ||
-                                      o.prices.buy.no > 0 ||
-                                      o.prices.sell.yes > 0 ||
-                                      o.prices.sell.no > 0
-                                  )
-                              )
-                            }
+                            disabled={loading}
                             className="w-full"
                           >
                             {loading ? "Calculating..." : "Calculate Arbitrage"}
@@ -669,7 +698,7 @@ export default function Home() {
                       </AlertDescription>
                     </Alert>
 
-                    <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       {outcome.results.length > 0 ? (
                         outcome.results.map((result, index) => (
                           <ArbitrageCard key={index} result={result} />

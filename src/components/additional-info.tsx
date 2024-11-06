@@ -20,7 +20,6 @@ export function AdditionalInformation() {
               </div>
               <span className="text-lg font-medium">How to Guide</span>
             </div>
-            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4 border-t bg-gray-50">
             <div className="flex items-center gap-2">
@@ -46,7 +45,6 @@ export function AdditionalInformation() {
               </div>
               <span className="text-lg font-medium">The Math</span>
             </div>
-            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4 border-t bg-gray-50">
             <p className="text-gray-600">Take a look at the math behind the arbitrage calculations here.</p>
@@ -61,7 +59,6 @@ export function AdditionalInformation() {
               </div>
               <span className="text-lg font-medium">Contact / Report Bugs</span>
             </div>
-            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
           </AccordionTrigger>
           <AccordionContent className="px-6 py-4 border-t bg-gray-50">
             <p className="text-gray-600">Submit any bugs you find or contact us here.</p>
