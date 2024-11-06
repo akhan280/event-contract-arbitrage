@@ -1,6 +1,10 @@
 # Event Contract Arbitrage Calculator 📈
 
-A Next.js-based web application for calculating arbitrage opportunities across prediction markets like Kalshi and Polymarket.
+A web application for calculating leveraging price discrepancies in prediction markets like Polymarket, Kalshi, and Robinhood.  
+Examine opportunity cost, spreads with fees included, and more. Check out our demo below:
+
+[![Watch the demo on YouTube](https://img.youtube.com/vi/Cgbfiwm72gk/0.jpg)](https://youtu.be/Cgbfiwm72gk)
+
 
 ## Overview
 
@@ -14,32 +18,6 @@ This tool helps users identify and calculate profitable arbitrage opportunities 
 - Contract length and annualized ROI calculations
 - Gas fee considerations for Polymarket trades
 - Real-time profit calculations
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 16.x or higher
-- npm or yarn package manager
-
-### Installation
-
-```bash
-# Clone the repository
-git clone [your-repository-url]
-
-# Install dependencies
-npm install
-# or
-yarn install
-
-# Start the development server
-npm run dev
-# or
-yarn dev
-```
-
-The application will be available at `http://localhost:3000`.
 
 ## Usage
 
@@ -55,39 +33,24 @@ The calculator works with markets that have:
 - Matching timeframes
 - Compatible price structures
 
-### Supported Markets
+### Supported Markets (UI)
 - Kalshi
 - Polymarket
+- Robinhood
+Technically can be used for anything which has corresponding markets.
 
 ## Best Practices
-
 - Verify market conditions match exactly before placing trades
 - Consider liquidity levels for better fill probability
 - Account for gas fees when trading on Polymarket
 - Double-check all calculations before executing trades
 
-## Technical Details
-
-Built with:
-- [Next.js](https://nextjs.org/)
-- [React](https://reactjs.org/)
-- [TypeScript](https://www.typescriptlang.org/)
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## License
-
-[Your chosen license]
 
 ## Roadmap
-
-- [ ] Automated gas fee profitability calculations
 - [ ] Market condition matching automation
-- [ ] Additional market integrations
-- [ ] Advanced portfolio management features
+- [ ] Pull market list from Kalshi / Polymarket
+- [ ] Advanced portfolio management features (alerts, etc.)
 
 ## Disclaimer
 
-This tool is for informational purposes only. Always conduct your own research and consider the risks before trading.
+This tool is for informational purposes only. Always conduct your own research and consider the risks before trading. We are not responsible for the accuracy of this data
