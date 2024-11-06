@@ -49,9 +49,8 @@ export default function Header() {
               <br></br>
               <br></br>
 
-              Examine opportunity cost, spreads
-              with fees included and more. If this was helpful, <a className='underline' href={"https://buymeacoffee.com/areebkhan2c"}>consider buying us a coffee</a>
-            </p>
+              Examine opportunity cost, spreads with fees included, and more. If this was helpful, <a className='underline' href="https://buymeacoffee.com/areebkhan2c">consider buying us a coffee</a>.
+              </p>
 
           </div>
         </div>
