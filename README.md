@@ -1,6 +1,7 @@
 # Event Contract Arbitrage Calculator 📈
 
 A web application for calculating leveraging price discrepancies in prediction markets like Polymarket, Kalshi, and Robinhood.  
+
 Examine opportunity cost, spreads with fees included, and more. 👇 Check out our demo below 👇  
 
 [![Watch the demo on YouTube](https://img.youtube.com/vi/Cgbfiwm72gk/0.jpg)](https://youtu.be/Cgbfiwm72gk)
