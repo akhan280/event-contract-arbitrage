@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, AlertCircle, DollarSign, Plus, Trash } from "lucide-react";
+import { Info, AlertCircle, DollarSign, Plus, Trash, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
@@ -28,6 +28,7 @@ import {
 } from "../components/ui/tooltip";
 import { Label } from "../components/ui/label";
 import Header from "../components/header";
+import ArbitrageCard from "../components/arbitrage-card";
 
 const initialMarket: Market = {
   id: "1",
@@ -630,12 +631,7 @@ export default function Home() {
                           </Button>
                         </div>
                       </TooltipTrigger>
-                      {(loading ||
-                        !markets.some(
-                          (m) =>
-                            m.title &&
-                            m.options.some(
-                              (o) =>
+                      {(loading || !markets.some((m) => m.title && m.options.some((o) =>
                                 o.prices.buy.yes > 0 ||
                                 o.prices.buy.no > 0 ||
                                 o.prices.sell.yes > 0 ||
@@ -661,50 +657,27 @@ export default function Home() {
                   </Alert>
                 )}
 
-                <div className="text-2xl w-fit pt-8 p-2 rounded-2xl">
-                  Arbitrage Opportunities:
                 </div>
                 {outcome && (
-                  <div className="grid grid-cols-2 gap-2">
-                    {outcome.results.length > 0 ? (
-                      outcome.results.map((localResult, index) => (
-                        <Card
-                          key={index}
-                          className="p-4 bg-[#F6F6F6]/60 gap-2 rounded-2xl"
-                        >
-                          <div className="space-y-2">
-                            <h3 className="font-semibold">
-                              {localResult.market}
-                            </h3>
-                            <p>{localResult.action}</p>
-                            <p className="text-green-600">
-                              Potential profit: ${localResult.netProfit}
-                            </p>
-                            <p className="text-green-600">
-                              Fees: ${localResult.totalFees}
-                            </p>
-                            <p className="text-green-600">
-                              Profit per contract: $
-                              {localResult.profitPerContract}
-                            </p>
-                            <p className="text-green-600">
-                              Description: ${localResult.description}
-                            </p>
-                          </div>
-                        </Card>
-                      ))
-                    ) : (
-                      <Alert>
-                        <Info className="h-4 w-4" />
-                        <AlertDescription>
-                          No arbitrage opportunities found. Try different market
-                          prices.
-                        </AlertDescription>
-                      </Alert>
-                    )}
+                  <div className="space-y-6">
+                    <div className="text-lg font-medium">Arbitrage Opportunities</div>
+                    
+                    <Alert variant="default" className="bg-amber-50 border-amber-200">
+                      <AlertTriangle className="h-4 w-4 text-amber-500" />
+                      <AlertDescription className="text-amber-800">
+                        This opportunity is shown for informational purposes only. Market data may be delayed or inaccurate. Always perform your own due diligence.
+                      </AlertDescription>
+                    </Alert>
+
+                    <div className="grid grid-cols-1 gap-4">
+                      {outcome.results.length > 0 ? (
+                        outcome.results.map((result, index) => (
+                          <ArbitrageCard key={index} result={result} />
+                        ))
+                      ) : null}
+                    </div>
                   </div>
                 )}
-              </div>
             </CardContent>
           </Card>
         </div>

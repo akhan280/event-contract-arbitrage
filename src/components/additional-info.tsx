@@ -1,38 +1,75 @@
+import React from 'react';
 import {
-    Accordion,
-    AccordionContent,
-    AccordionItem,
-    AccordionTrigger,
-  } from "@/components/ui/accordion"
-import Credit from "./credit"
-  
-  export function AdditionalInformation() {
-    return (
-      <div className="w-full">
-        <div className="px-4 py-2 mb-3 bg-[#F6F6F6]/60 text-[22px] w-fit rounded-2xl text-start mx-6">
-              More information
-        </div>
-        <Accordion type="single" collapsible className="w-full px-8">
-          <AccordionItem value="item-1">
-            <AccordionTrigger>How to guide</AccordionTrigger>
-            <AccordionContent>
-            Here is a <a href="https://docs.google.com/document/d/1C5DWdrFbJzoltCERUGBZfXsBLlUBKiLJoqwe-egIekg/edit?usp=sharing" target="_blank" rel="noopener noreferrer">doc</a> explaining exactly how to use our calculator.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-2">
-            <AccordionTrigger>The math</AccordionTrigger>
-            <AccordionContent>
-            Take a look at the math behind the arbitrage calculations here.
-            </AccordionContent>
-          </AccordionItem>
-          <AccordionItem value="item-3">
-            <AccordionTrigger>Contact / Report Bugs</AccordionTrigger>
-            <AccordionContent>
-            Submit any bugs you find or contact us here.
-            </AccordionContent>
-          </AccordionItem>
-        </Accordion>
-      </div>
-    )
-  }
-  
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
+import { FileText, Calculator, Bug, ExternalLink, ChevronRight } from 'lucide-react';
+import Credit from "./credit";
+
+export function AdditionalInformation() {
+  return (
+    <div className="w-full max-w-3xl mx-auto py-4 px-8">
+      <Accordion type="single" collapsible className="w-full space-y-4">
+        <AccordionItem value="item-1" className="border rounded-xl overflow-hidden bg-white shadow-sm">
+          <AccordionTrigger className="px-6 py-4 hover:no-underline group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-blue-50 rounded-lg">
+                <FileText className="w-5 h-5 text-blue-600" />
+              </div>
+              <span className="text-lg font-medium">How to Guide</span>
+            </div>
+            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+          </AccordionTrigger>
+          <AccordionContent className="px-6 py-4 border-t bg-gray-50">
+            <div className="flex items-center gap-2">
+              <p className="text-gray-600">Access our comprehensive guide</p>
+              <a 
+                href="https://docs.google.com/document/d/1C5DWdrFbJzoltCERUGBZfXsBLlUBKiLJoqwe-egIekg/edit?usp=sharing" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-700 font-medium"
+              >
+                here
+                <ExternalLink className="w-4 h-4" />
+              </a>
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-2" className="border rounded-xl overflow-hidden bg-white shadow-sm">
+          <AccordionTrigger className="px-6 py-4 hover:no-underline group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-purple-50 rounded-lg">
+                <Calculator className="w-5 h-5 text-purple-600" />
+              </div>
+              <span className="text-lg font-medium">The Math</span>
+            </div>
+            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+          </AccordionTrigger>
+          <AccordionContent className="px-6 py-4 border-t bg-gray-50">
+            <p className="text-gray-600">Take a look at the math behind the arbitrage calculations here.</p>
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="item-3" className="border rounded-xl overflow-hidden bg-white shadow-sm">
+          <AccordionTrigger className="px-6 py-4 hover:no-underline group">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-red-50 rounded-lg">
+                <Bug className="w-5 h-5 text-red-600" />
+              </div>
+              <span className="text-lg font-medium">Contact / Report Bugs</span>
+            </div>
+            <ChevronRight className="w-4 h-4 transition-transform duration-200 group-data-[state=open]:rotate-90" />
+          </AccordionTrigger>
+          <AccordionContent className="px-6 py-4 border-t bg-gray-50">
+            <p className="text-gray-600">Submit any bugs you find or contact us here.</p>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
+    </div>
+  );
+}
+
+export default AdditionalInformation;

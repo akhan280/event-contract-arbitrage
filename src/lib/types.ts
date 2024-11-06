@@ -30,8 +30,12 @@ export interface ArbitrageResponse {
         market: string;
         action: string;
         profitPerContract: string;
-        totalFees: string;
-        netProfit: string
+        netProfitPerContract: string;
+        numberOfContracts: number;
+        totalNetProfit: string;
+        annualizedROI: string;
+        perContractFees: string;
+        perTransactionFees: string;
         description: string
     }[];
 }
