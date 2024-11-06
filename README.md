@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Event Contract Arbitrage Calculator 📈
+
+A Next.js-based web application for calculating arbitrage opportunities across prediction markets like Kalshi and Polymarket.
+
+## Overview
+
+This tool helps users identify and calculate profitable arbitrage opportunities between different prediction markets. It supports both binary and multiple-choice markets, providing real-time calculations of potential profits and required position sizes.
+
+## Features
+
+- Binary market arbitrage calculations
+- Multiple-choice market analysis
+- Cross-market arbitrage detection
+- Contract length and annualized ROI calculations
+- Gas fee considerations for Polymarket trades
+- Real-time profit calculations
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js 16.x or higher
+- npm or yarn package manager
+
+### Installation
 
 ```bash
+# Clone the repository
+git clone [your-repository-url]
+
+# Install dependencies
+npm install
+# or
+yarn install
+
+# Start the development server
 npm run dev
 # or
 yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The application will be available at `http://localhost:3000`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Usage
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Select market type (Binary or Multiple Choice)
+2. Enter contract prices from different markets
+3. Input principal amount and contract length (optional)
+4. View calculated arbitrage opportunities and potential profits
 
-## Learn More
+## Market Compatibility
 
-To learn more about Next.js, take a look at the following resources:
+The calculator works with markets that have:
+- Identical outcome conditions
+- Matching timeframes
+- Compatible price structures
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+### Supported Markets
+- Kalshi
+- Polymarket
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Best Practices
 
-## Deploy on Vercel
+- Verify market conditions match exactly before placing trades
+- Consider liquidity levels for better fill probability
+- Account for gas fees when trading on Polymarket
+- Double-check all calculations before executing trades
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Technical Details
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Built with:
+- [Next.js](https://nextjs.org/)
+- [React](https://reactjs.org/)
+- [TypeScript](https://www.typescriptlang.org/)
+
+## Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## License
+
+[Your chosen license]
+
+## Roadmap
+
+- [ ] Automated gas fee profitability calculations
+- [ ] Market condition matching automation
+- [ ] Additional market integrations
+- [ ] Advanced portfolio management features
+
+## Disclaimer
+
+This tool is for informational purposes only. Always conduct your own research and consider the risks before trading.
