@@ -340,7 +340,7 @@ export default function Home() {
             <CardContent>
               <div className="space-y-6">
                 <div className="flex flex-col gap-7">
-                  <div className="flex flex-row py-4 border-b border-black/5">
+                  <div className="flex flex-row py-4">
                     <Input
                       placeholder="Enter market title"
                       value={marketTitle}
