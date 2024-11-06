@@ -1,4 +1,4 @@
-# Arbitrage Calculator
+# Event Contract Arbitrage Calculator 📈
 
 A Next.js-based web application for calculating arbitrage opportunities across prediction markets like Kalshi and Polymarket.
 
