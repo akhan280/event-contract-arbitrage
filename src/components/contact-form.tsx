@@ -29,7 +29,6 @@ export function ContactForm() {
     },
   });
 
-  // Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     console.log(values);

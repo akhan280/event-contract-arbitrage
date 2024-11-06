@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     siteName: "Event Contract Arbitrage Calculator",
     images: [
       {
-        url: "https://eventarb.com/og-image.png",
+        url: "https://eventarb.com/thumbnail.png",
         width: 1200,
         height: 630,
         alt: "Event Contract Arbitrage Calculator Dashboard",
@@ -83,7 +83,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Professional Trading Tools for Event Contract Arbitrage",
     description: "Find arbitrage opportunities across major platforms: Kalshi, Polymarket, Robinhood, and Interactive Brokers. Real-time calculations and market analysis.",
-    images: ["https://eventarb.com/twitter-image.png"],
+    images: ["https://eventarb.com/thumbnail.png"],
     creator: "@eventarb",
     site: "@eventarb",
   },
