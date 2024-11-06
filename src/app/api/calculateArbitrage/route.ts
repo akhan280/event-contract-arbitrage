@@ -37,12 +37,16 @@ export async function POST(request: NextRequest): Promise<NextResponse> {
 
     // Fetch gas fee in USD
     const gasPriceInGwei = await fetchGasPrice();
-    const gasFeeInUSD = await convertGasPriceToUSDC(gasPriceInGwei);
+    let gasFeeInUSD = 0
+    if (gasPriceInGwei === 0) {
+      gasFeeInUSD = await convertGasPriceToUSDC(gasPriceInGwei);
+    }
 
     const arbitrageResults: ArbitrageResponse = calculateArbitrage(markets, principal, dte, gasFeeInUSD);
     console.log("[Arbitrage results]", arbitrageResults);
 
     return NextResponse.json({ success: true, data: arbitrageResults });
+
   } catch (error) {
     console.error('Error:', error);
     return NextResponse.json(
@@ -68,11 +72,11 @@ async function fetchGasPrice(): Promise<number> {
 
     } else {
       console.warn('Etherscan API warning:', response.data.message);
-      return 30;
+      return 0;
     }
   } catch (error) {
     console.error('Error fetching gas price from Etherscan:', error);
-    return 30;
+    return 0;
   }
 }
 
@@ -98,7 +102,7 @@ async function convertGasPriceToUSDC(gasPriceInGwei: number): Promise<number> {
     return gasCostInUSD;
   } catch (error) {
     console.error('Error fetching ETH price:', error);
-    return 0.5;
+    return 0;
   }
 }
 
