@@ -316,7 +316,7 @@ export default function Home() {
 
   return (
     <>
-      <div className="flex flex-col sm:grid sm:grid-cols-[40%_60%] min-h-screen sm:h-screen sm:overflow-hidden">
+      <div className="flex flex-col sm:grid sm:grid-cols-[30%_70%] min-h-screen sm:h-screen sm:overflow-hidden">
         <div className="order-2 sm:order-1 min-h-screen sm:h-screen flex flex-col">
           <div className="hidden sm:block">
             <Header />
