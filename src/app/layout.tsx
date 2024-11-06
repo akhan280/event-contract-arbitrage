@@ -82,7 +82,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Professional Trading Tools for Event Contract Arbitrage",
+    title: "Event Contract Arbitrage Calculator for Kalshi, Polymarket & More | Multi-Platform Calculator",
     description: "Find arbitrage opportunities across major platforms: Kalshi, Polymarket, Robinhood, and Interactive Brokers. Real-time calculations and market analysis.",
     images: ["https://eventarb.com/thumbnail.png"],
     creator: "@eventarb",
