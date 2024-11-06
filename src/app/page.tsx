@@ -165,8 +165,10 @@ export default function Home() {
     if (!markets.some((m) => m.title)) {
       return "Please enter a market title";
     }
-    if (dte < 0) {
-      return "Days to expiration must be 0 or greater";
+    console.log("Current dte", dte)
+
+    if (dte < 1) {
+      return "Days to expiration must be 1 or greater";
     }
     if (principal <= 0) {
       return "Principal amount must be greater than 0";
@@ -289,7 +291,7 @@ export default function Home() {
       errors.push("Please enter a market title");
     }
     
-    if (dte < 0) {
+    if (dte < 1) {
       errors.push("Days to expiration must be 0 or greater");
     }
     
