@@ -308,9 +308,8 @@ export default function Home() {
           o.prices.sell.no > 0
       )
     )) {
-      errors.push("Please enter at least one price");
+      errors.push("Please enter at least onw price");
     }
-    
     return errors;
   };
 
