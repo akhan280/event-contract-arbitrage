@@ -46,3 +46,13 @@ export interface ArbitrageRequest {
     dte: number;
     principal: number
 }
+
+export interface ShareData {
+    id?: string;
+    markets: Market[];
+    dte: number;
+    principal: number;
+    outcome: ArbitrageResponse | null;
+    createdAt?: Date;
+  }
+  

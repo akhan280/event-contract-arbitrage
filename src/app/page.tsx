@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -22,7 +22,7 @@ import Header from "../components/header";
 import ArbitrageCard from "../components/arbitrage-card";
 import { toast } from "../hooks/use-toast";
 import ShareButton from "../components/sharable-url";
-import { useSharedData } from "../hooks/use-shared-data";
+import { SharedDataLoader } from "../hooks/use-shared-data";
 
 const initialMarket: Market = {
   id: "1",
@@ -52,8 +52,6 @@ export default function Home() {
   );
   const [dte, setDte] = useState<number>(0);
   const [principal, setPrincipal] = useState<number>(0);
-
-  useSharedData(setMarkets, setDte, setPrincipal, setOutcome, setMarketTitle);
 
   const updateAllMarketTypes = (type: "binary" | "multi") => {
     setGlobalMarketType(type);
@@ -316,8 +314,18 @@ export default function Home() {
     return errors;
   };
 
+
   return (
     <>
+      <Suspense fallback={null}>
+        <SharedDataLoader
+          setMarkets={setMarkets}
+          setDte={setDte}
+          setPrincipal={setPrincipal}
+          setOutcome={setOutcome}
+          setMarketTitle={setMarketTitle}
+        />
+      </Suspense>
       <div className="flex flex-col sm:grid sm:grid-cols-[30%_70%] min-h-screen sm:h-screen sm:overflow-hidden">
         <div className="order-2 sm:order-1 min-h-screen sm:h-screen flex flex-col">
           <div className="hidden sm:block">
@@ -651,13 +659,6 @@ export default function Home() {
                     Add Another Market
                   </Button>
 
-                  <ShareButton 
-                    markets={markets}
-                    dte={dte}
-                    principal={principal}
-                    outcome={outcome}
-                  />
-
                   <TooltipProvider>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -689,6 +690,13 @@ export default function Home() {
                     </Tooltip>
                   </TooltipProvider>
                 </div>
+
+                <ShareButton 
+                    markets={markets}
+                    dte={dte}
+                    principal={principal}
+                    outcome={outcome}
+                />
 
                 {error && (
                   <Alert variant="destructive">
