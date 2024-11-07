@@ -21,6 +21,8 @@ import { Label } from "../components/ui/label";
 import Header from "../components/header";
 import ArbitrageCard from "../components/arbitrage-card";
 import { toast } from "../hooks/use-toast";
+import ShareButton from "../components/sharable-url";
+import { useSharedData } from "../hooks/use-shared-data";
 
 const initialMarket: Market = {
   id: "1",
@@ -50,6 +52,8 @@ export default function Home() {
   );
   const [dte, setDte] = useState<number>(0);
   const [principal, setPrincipal] = useState<number>(0);
+
+  useSharedData(setMarkets, setDte, setPrincipal, setOutcome, setMarketTitle);
 
   const updateAllMarketTypes = (type: "binary" | "multi") => {
     setGlobalMarketType(type);
@@ -282,7 +286,6 @@ export default function Home() {
     
     setLoading(false);
   };
-
 
   const validateInputs = (): string[] => {
     const errors: string[] = [];
@@ -647,6 +650,13 @@ export default function Home() {
                     <Plus className="h-4 w-4 mr-2" />
                     Add Another Market
                   </Button>
+
+                  <ShareButton 
+                    markets={markets}
+                    dte={dte}
+                    principal={principal}
+                    outcome={outcome}
+                  />
 
                   <TooltipProvider>
                     <Tooltip>
