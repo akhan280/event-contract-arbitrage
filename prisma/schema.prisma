@@ -15,8 +15,17 @@ model eventarbemails {
 }
 
 model eventArbSupportRequests {
-  id     Int        @id @default(autoincrement())
-  email  String?
-  name   String?
+  id      Int     @id @default(autoincrement())
+  email   String?
+  name    String?
   message String?
+}
+
+model Share {
+  id        String   @id @default(cuid())
+  data      Json     @db.JsonB
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+  
+  @@index([expiresAt])
 }
