@@ -9,6 +9,7 @@ interface SharedDataLoaderProps {
   setPrincipal: (principal: number) => void;
   setOutcome: (outcome: ArbitrageResponse | null) => void;
   setMarketTitle: (title: string) => void;
+  setLoading: (loading: boolean) => void;
 }
 
 export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
@@ -17,6 +18,7 @@ export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
   setPrincipal,
   setOutcome,
   setMarketTitle,
+  setLoading
 }) => {
   const searchParams = useSearchParams();
   
@@ -24,6 +26,7 @@ export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
     const id = searchParams.get('id');
     
     if (id) {
+      setLoading(true);
       const fetchSharedData = async () => {
         try {
           const response = await fetch(`/api/share?id=${id}`);
@@ -56,12 +59,14 @@ export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
             description: "Failed to load shared calculation",
             variant: "destructive",
           });
+        } finally {
+          setLoading(false);
         }
       };
       
       fetchSharedData();
     }
-  }, [searchParams, setMarkets, setDte, setPrincipal, setOutcome, setMarketTitle]);
+  }, [searchParams, setMarkets, setDte, setPrincipal, setOutcome, setMarketTitle, setLoading]);
 
   return null;
 };

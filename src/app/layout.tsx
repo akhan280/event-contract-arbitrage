@@ -101,10 +101,6 @@ export const metadata: Metadata = {
     }
   },
   category: "Finance",
-  verification: {
-    google: "verification_token",
-    yandex: "yandex_verification_token",
-  },
   other: {
     "application-name": "Event Contract Arbitrage Calculator",
     "apple-mobile-web-app-capable": "yes",
