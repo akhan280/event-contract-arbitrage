@@ -316,31 +316,31 @@ export default function Home() {
 
   return (
     <>
-        <SharedDataLoader
-          setMarkets={setMarkets}
-          setDte={setDte}
-          setPrincipal={setPrincipal}
-          setOutcome={setOutcome}
-          setMarketTitle={setMarketTitle}
-          setLoading={setLoading}
-        />
+      <SharedDataLoader
+        setMarkets={setMarkets}
+        setDte={setDte}
+        setPrincipal={setPrincipal}
+        setOutcome={setOutcome}
+        setMarketTitle={setMarketTitle}
+        setLoading={setLoading}
+      />
       {loading ? <Loading /> : (
 
       <div className="flex flex-col sm:grid sm:grid-cols-[30%_70%] min-h-screen sm:h-screen sm:overflow-hidden">
-      <div className="order-2 sm:order-1 min-h-screen sm:h-screen flex flex-col">
-        <div className="hidden sm:block">
-          <Header />
-        </div>
-        <div className="flex-1 flex flex-col justify-evenly items-center">
-          <AdditionalInformation />
-          <div className="p-4">
-            <EmailSubscription />
+        <div className="order-2 sm:order-1 min-h-screen sm:h-screen flex flex-col">
+          <div className="hidden sm:block">
+            <Header />
+          </div>
+          <div className="flex-1 flex flex-col justify-evenly items-center">
+            <AdditionalInformation />
+            <div className="p-4">
+              <EmailSubscription />
+            </div>
+          </div>
+          <div className="flex flex-col items-center justify-center w-full mb-6">
+            <Credit />
           </div>
         </div>
-        <div className="flex flex-col items-center justify-center w-full mb-6">
-          <Credit />
-        </div>
-      </div>
       
       
       <div className="order-1 sm:order-2 overflow-y-auto border-t sm:border-t-0 sm:border-l border-black/20">
@@ -510,6 +510,7 @@ export default function Home() {
                                       ¢
                                     </span>
                                   </div>
+                                  
                                   {market.type === "multi" &&
                                     market.options.length > 1 && (
                                       <Button
@@ -532,6 +533,7 @@ export default function Home() {
                                 </div>
                               </div>
                             ))}
+
                             {market.type === "multi" && index === 0 && (
                               <div className="flex items-center justify-center pt-8">
                                 <Button
@@ -545,6 +547,7 @@ export default function Home() {
                               </div>
                             )}
                           </div>
+
                         </TabsContent>
 
                         <TabsContent value="sell">
