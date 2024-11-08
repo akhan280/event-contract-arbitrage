@@ -23,6 +23,8 @@ import ArbitrageCard from "../components/arbitrage-card";
 import { toast } from "../hooks/use-toast";
 import ShareButton from "../components/sharable-url";
 import { SharedDataLoader } from "../hooks/use-shared-data";
+import Loading from "./loading";
+import { MarketInputs } from "../components/market-header";
 
 const initialMarket: Market = {
   id: "1",
@@ -47,9 +49,7 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [marketTitle, setMarketTitle] = useState("");
-  const [globalMarketType, setGlobalMarketType] = useState<"binary" | "multi">(
-    "binary"
-  );
+  const [globalMarketType, setGlobalMarketType] = useState<"binary" | "multi">("binary");
   const [dte, setDte] = useState<number>(0);
   const [principal, setPrincipal] = useState<number>(0);
 
@@ -317,7 +317,7 @@ export default function Home() {
 
   return (
     <>
-      <Suspense fallback={null}>
+      <Suspense fallback={<Loading/>}>
         <SharedDataLoader
           setMarkets={setMarkets}
           setDte={setDte}
@@ -325,7 +325,6 @@ export default function Home() {
           setOutcome={setOutcome}
           setMarketTitle={setMarketTitle}
         />
-      </Suspense>
       <div className="flex flex-col sm:grid sm:grid-cols-[30%_70%] min-h-screen sm:h-screen sm:overflow-hidden">
         <div className="order-2 sm:order-1 min-h-screen sm:h-screen flex flex-col">
           <div className="hidden sm:block">
@@ -341,59 +340,26 @@ export default function Home() {
             <Credit />
           </div>
         </div>
+        
+        
         <div className="order-1 sm:order-2 overflow-y-auto border-t sm:border-t-0 sm:border-l border-black/20">
-          <Card className="mb-8 ">
-            <CardHeader>
-              {" "}
+          <Card className="mb-8">
               <div className="sm:hidden">
                 <Header />
               </div>
-            </CardHeader>
             <CardContent>
               <div className="space-y-6">
                 <div className="flex flex-col gap-7">
-                  <div className="flex flex-row py-4">
-                    <Input
-                      placeholder="Enter market title"
-                      value={marketTitle}
-                      onChange={(e) => updateMarketTitle(e.target.value)}
-                      className="text-2xl py-8 border-0 focus:ring-0 focus:outline-none shadow-none hover:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
-                    />
-                    <div className="flex flex-row gap-4">
-                      <div className="w-fit">
-                        <Label className="text-xs">
-                          Contract length &#40;days&#41;
-                        </Label>
-                        <Input
-                          value={dte}
-                          onChange={(e) =>
-                            setDte(Math.max(0, parseInt(e.target.value) || 0))
-                          }
-                          className="text-sm w-32 rounded-xl"
-                          placeholder="Days to Expiration"
-                        />
-                      </div>
-                      <div className="w-fit">
-                        <Label className="text-xs">Principal Amount</Label>
-                        <div className="relative">
-                          <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-                            $
-                          </span>
-                          <Input
-                            min="0"
-                            value={principal}
-                            onChange={(e) =>
-                              setPrincipal(
-                                Math.max(0, parseFloat(e.target.value) || 0)
-                              )
-                            }
-                            className="text-sm w-32 pl-6 rounded-xl"
-                            placeholder="Principal Amount"
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                  
+                  <MarketInputs 
+                    marketTitle={marketTitle}
+                    dte={dte}
+                    principal={principal}
+                    updateMarketTitle={updateMarketTitle}
+                    setDte={setDte}
+                    setPrincipal={setPrincipal}
+                  />
+                  
                   {markets.map((market, index) => (
                     <Card
                       key={market.id}
@@ -730,6 +696,7 @@ export default function Home() {
           </Card>
         </div>
       </div>
+      </Suspense>
     </>
   );
 }
