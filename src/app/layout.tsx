@@ -20,7 +20,7 @@ const geistMono = localFont({
 export const metadata: Metadata = {
   metadataBase: new URL('https://eventarb.com'),
   title: "Event Contract Arbitrage Calculator for Kalshi, Polymarket & More | Multi-Platform Calculator",
-  description: "Professional arbitrage calculator for event contracts across Kalshi, Polymarket, Robinhood, and Interactive Brokers. Find real-time arbitrage opportunities, compare market odds, and maximize profits with our comprehensive trading tools. Perfect for professional traders and arbitrage specialists.",
+  description: "Find real-time arbitrage opportunities, compare market odds, and maximize profits for event contracts across Kalshi, Polymarket, Robinhood, and Interactive Brokers.",
   keywords: [
     // Platform-specific terms
     "Polymarket arbitrage", "Kalshi arbitrage", "Robinhood options arbitrage",
