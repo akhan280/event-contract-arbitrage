@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import Icon from "@/components/icon";
 import { Analytics } from "@vercel/analytics/react"
+import { CSPostHogProvider } from "../lib/posthog";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -125,9 +126,13 @@ export default function RootLayout({
         <link rel="manifest" href="/manifest.json" />
       </head>
       <body>
+        <CSPostHogProvider>
+
         {children}
         <Toaster />
         <Analytics></Analytics>
+        </CSPostHogProvider>
+
       </body>
     </html>
   );
