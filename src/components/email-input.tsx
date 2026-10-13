@@ -1,5 +1,4 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -24,14 +23,14 @@ const EmailSubscription = () => {
       if (response.ok) {
         toast({
           title: "Success!",
-          description: "You'll receive alerts when new opportunities arise.",
+          description: "We will email you when we ship new features.",
           variant: "default",
         });
         setEmail('');
       } else {
         throw new Error('Subscription failed');
       }
-    } catch (error) {
+    } catch {
       toast({
         title: "Error",
         description: "Something went wrong. Please try again.",
@@ -44,29 +43,11 @@ const EmailSubscription = () => {
 
   return (
     <div className="relative">
-      {/* Top-left triangle
-      <div 
-        className="absolute -top-4 -left-6 w-16 h-16  z-20 transform rotate-60 bg-[#00D991]"
-        style={{
-          clipPath: 'polygon(0 0, 0% 100%, 100% 0)',
-        }}
-      />
-      
-      Bottom-right triangle
-      <div 
-        className="absolute -bottom-4 -right-2 w-16 h-16 transform rotate-60 z-20 bg-[#2563EB]"
-        style={{
-          clipPath: 'polygon(100% 100%, 0% 100%, 100% 0)',
-        }}
-      /> */}
-
       <Card className="w-full max-w-md outline outline-[0.5px] outline-[#DEDEDE] rounded-[32px] bg-white relative z-10">
         <CardContent className="pt-6">
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="text-center mb-6">
-              <h2 className="text-2xl font-normal">
-                Get free alerts when arbitrage opportunities open
-              </h2>
+              <h2 className="text-2xl font-normal">Get updates when we ship new features</h2>
             </div>
             <div className="flex space-x-2">
               <Input

@@ -1,57 +1,75 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MarketType } from "@/lib/types";
 
 interface MarketInputsProps {
   marketTitle: string;
+  marketType: MarketType;
   dte: number;
   principal: number;
-  updateMarketTitle: (value: string) => void;
-  setDte: (value: number) => void;
-  setPrincipal: (value: number) => void;
+  onTitleChange: (value: string) => void;
+  onTypeChange: (value: MarketType) => void;
+  onDteChange: (value: number) => void;
+  onPrincipalChange: (value: number) => void;
 }
 
 export const MarketInputs = ({
   marketTitle,
+  marketType,
   dte,
   principal,
-  updateMarketTitle,
-  setDte,
-  setPrincipal,
-}: MarketInputsProps) => {
-  return (
-    <div className="flex flex-row py-4">
-      <Input
-        placeholder="Enter market title"
-        value={marketTitle}
-        onChange={(e) => updateMarketTitle(e.target.value)}
-        className="text-2xl py-8 border-0 focus:ring-0 focus:outline-none shadow-none hover:border-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
-      />
-      <div className="flex flex-row gap-4">
-        <div className="w-fit">
-          <Label className="text-xs">Contract length &#40;days&#41;</Label>
+  onTitleChange,
+  onTypeChange,
+  onDteChange,
+  onPrincipalChange,
+}: MarketInputsProps) => (
+  <div className="flex flex-col gap-4 py-4">
+    <Input
+      placeholder="Enter market title, e.g. Fed cuts rates in December"
+      value={marketTitle}
+      onChange={(e) => onTitleChange(e.target.value)}
+      aria-label="Market title"
+      className="text-xl sm:text-2xl py-6 sm:py-8 border-0 shadow-none focus-visible:ring-0 focus-visible:ring-offset-0 text-black"
+    />
+    <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+      <Tabs value={marketType} onValueChange={(v) => onTypeChange(v as MarketType)}>
+        <TabsList>
+          <TabsTrigger value="binary">Binary Market</TabsTrigger>
+          <TabsTrigger value="multi">Multiple Choice</TabsTrigger>
+        </TabsList>
+      </Tabs>
+      <div className="flex gap-4 sm:ml-auto">
+        <div>
+          <Label htmlFor="dte" className="text-xs">
+            Days to expiration
+          </Label>
           <Input
-            value={dte}
-            onChange={(e) => setDte(Math.max(0, parseInt(e.target.value) || 0))}
+            id="dte"
+            inputMode="numeric"
+            value={dte || ""}
+            onChange={(e) => onDteChange(Math.max(0, parseInt(e.target.value) || 0))}
             className="text-sm w-32 rounded-xl"
-            placeholder="Days to Expiration"
+            placeholder="30"
           />
         </div>
-        <div className="w-fit">
-          <Label className="text-xs">Principal Amount</Label>
+        <div>
+          <Label htmlFor="principal" className="text-xs">
+            Principal
+          </Label>
           <div className="relative">
-            <span className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-500">
-              $
-            </span>
+            <span className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">$</span>
             <Input
-              min="0"
-              value={principal}
-              onChange={(e) => setPrincipal(Math.max(0, parseFloat(e.target.value) || 0))}
+              id="principal"
+              inputMode="decimal"
+              value={principal || ""}
+              onChange={(e) => onPrincipalChange(Math.max(0, parseFloat(e.target.value) || 0))}
               className="text-sm w-32 pl-6 rounded-xl"
-              placeholder="Principal Amount"
+              placeholder="1000"
             />
           </div>
         </div>
       </div>
     </div>
-  );
-};
+  </div>
+);

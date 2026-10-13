@@ -101,6 +101,28 @@ const ArbitrageCard = ({ opportunity, dte }: { opportunity: Opportunity; dte: nu
           </p>
         </div>
 
+        <div className="space-y-2">
+          <h3 className="text-sm text-gray-500 font-medium">PAYOUT BY RESULT</h3>
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="text-left text-gray-500">
+                <th className="font-normal">If</th>
+                <th className="font-normal text-right">You get</th>
+                <th className="font-normal text-right">Profit</th>
+              </tr>
+            </thead>
+            <tbody>
+              {resultsFor(opportunity).map((label) => (
+                <tr key={label} className="border-t">
+                  <td className="py-1">{label}</td>
+                  <td className="py-1 text-right">{usd(opportunity.payout)}</td>
+                  <td className="py-1 text-right text-green-600">{usd(opportunity.profit)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
         {opportunity.requiresExhaustiveOptions && (
           <div className="flex gap-2 text-sm text-amber-800 bg-amber-50 p-3 rounded-lg">
             <AlertTriangle className="h-4 w-4 mt-0.5 shrink-0 text-amber-500" />
@@ -114,6 +136,15 @@ const ArbitrageCard = ({ opportunity, dte }: { opportunity: Opportunity; dte: nu
     </Card>
   );
 };
+
+/** Every result the trade covers. The payout is the same for each one. */
+function resultsFor(opportunity: Opportunity): string[] {
+  if (opportunity.kind === "yes-no") {
+    const outcome = opportunity.legs[0].outcome;
+    return [`${outcome}: Yes`, `${outcome}: No`];
+  }
+  return opportunity.legs.map((leg) => `${leg.outcome} wins`);
+}
 
 function Row({ label, value }: { label: string; value: string }) {
   return (

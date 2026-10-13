@@ -1,71 +1,43 @@
-import React from 'react';
-import Image from 'next/image';
-import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
+import React from "react";
+import Image from "next/image";
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from "@/components/ui/select";
+import { Broker, BROKERS } from "@/lib/types";
 
-type BrokerType = 'Polymarket' | 'Kalshi' | 'Robinhood';
-
-const brokerLogos: Record<BrokerType, string> = {
+const brokerLogos: Record<Broker, string> = {
   Polymarket: "/polymarket.png",
   Kalshi: "/kalshi.jpg",
-  Robinhood: "/robinhood.png"  // Make sure to add the Robinhood logo to your public folder
+  Robinhood: "/robinhood.png",
 };
 
-interface BrokerSelectProps {
-  value: BrokerType;
-  onChange: (value: BrokerType) => void;
-}
-
-const BrokerSelect: React.FC<BrokerSelectProps> = ({ value, onChange }) => {
+function BrokerLabel({ broker }: { broker: Broker }) {
   return (
-    <div className="flex flex-row justify-between items-center gap-2 w-full">
-      <div className='flex flex-row justify-center items-center gap-3'>
-        <Image
-          src={brokerLogos[value]}
-          alt={value}
-          width={20}
-          height={20}
-          className="object-contain"
-        />     
-        <div>{value}</div>   
-      </div>
-      <div>
-        <Select value={value} onValueChange={onChange}>
-          <SelectTrigger className="w-full">
-            <SelectValue>
-              <div className="flex items-center gap-2">
-                {value && (
-                  <Image
-                    src={brokerLogos[value]}
-                    alt={value}
-                    width={20}
-                    height={20}
-                    className="object-contain"
-                  />
-                )}
-                {value || "Select Broker"}
-              </div>
-            </SelectValue>
-          </SelectTrigger>
-          <SelectContent>
-            {(Object.keys(brokerLogos) as BrokerType[]).map((broker) => (
-              <SelectItem key={broker} value={broker}>
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={brokerLogos[broker]}
-                    alt={broker}
-                    width={20}
-                    height={20}
-                    className="object-contain"
-                  />
-                  {broker}
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
+    <div className="flex items-center gap-2">
+      <Image src={brokerLogos[broker]} alt="" width={20} height={20} className="object-contain rounded-full" />
+      {broker}
     </div>
   );
-};
+}
+
+interface BrokerSelectProps {
+  value: Broker;
+  onChange: (value: Broker) => void;
+}
+
+const BrokerSelect: React.FC<BrokerSelectProps> = ({ value, onChange }) => (
+  <Select value={value} onValueChange={(v) => onChange(v as Broker)}>
+    <SelectTrigger className="w-44 bg-white" aria-label="Venue">
+      <SelectValue>
+        <BrokerLabel broker={value} />
+      </SelectValue>
+    </SelectTrigger>
+    <SelectContent>
+      {BROKERS.map((broker) => (
+        <SelectItem key={broker} value={broker}>
+          <BrokerLabel broker={broker} />
+        </SelectItem>
+      ))}
+    </SelectContent>
+  </Select>
+);
 
 export default BrokerSelect;
