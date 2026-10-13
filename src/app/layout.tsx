@@ -2,8 +2,7 @@ import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
-import Icon from "@/components/icon";
-import { Analytics } from "@vercel/analytics/react"
+import { Analytics } from "@vercel/analytics/react";
 import { CSPostHogProvider } from "../lib/posthog";
 
 const geistSans = localFont({
@@ -18,93 +17,40 @@ const geistMono = localFont({
   weight: "100 900",
 });
 
+const description =
+  "Find arbitrage between Kalshi, Polymarket, and Robinhood event contracts. See position size, fees, payout, and annualized return.";
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://eventarb.com'),
-  title: "Event Contract Arbitrage Calculator for Kalshi, Polymarket & More | Multi-Platform Calculator",
-  description: "Find real-time arbitrage opportunities, compare market odds, and maximize profits for event contracts across Kalshi, Polymarket, Robinhood, and Interactive Brokers.",
+  metadataBase: new URL("https://www.eventarb.com"),
+  title: "Event Contract Arbitrage Calculator for Kalshi, Polymarket & Robinhood",
+  description,
   keywords: [
-    // Platform-specific terms
-    "Polymarket arbitrage", "Kalshi arbitrage", "Robinhood options arbitrage",
-    "Interactive Brokers arbitrage", "multi-platform arbitrage",
-    
-    // Trading terms
-    "event contract trading", "prediction markets", "binary options",
-    "options trading", "futures trading", "cross-exchange arbitrage",
-    
-    // Feature-specific terms
-    "real-time arbitrage calculator", "trading calculator",
-    "market odds comparison", "price discrepancy finder",
-    "arbitrage opportunity scanner", "trading automation tools",
-    
-    // Professional terms
-    "professional trading tools", "institutional trading",
-    "algorithmic trading", "quantitative analysis",
-    "market making", "statistical arbitrage",
-    
-    // Market-specific terms
-    "prediction market arbitrage", "binary options trading",
-    "futures market arbitrage", "cross-market opportunities",
-    "market price differences", "risk-free arbitrage"
+    "Polymarket arbitrage",
+    "Kalshi arbitrage",
+    "Robinhood event contracts",
+    "prediction market arbitrage",
+    "event contract calculator",
+    "cross-exchange arbitrage",
   ],
-  authors: [
-    {
-      name: "Event Contract Arbitrage Calculator",
-      url: "https://eventarb.com",
-    }
-  ],
-  creator: "Event Contract Arbitrage Calculator",
-  publisher: "Event Contract Arbitrage Calculator",
-  robots: {
-    index: true,
-    follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-image-preview': 'large',
-      'max-video-preview': -1,
-      'max-snippet': -1,
-    },
-  },
+  authors: [{ name: "Areeb Khan", url: "https://x.com/areebkhan280" }],
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://eventarb.com",
-    title: "Professional Multi-Platform Arbitrage Calculator for Event Contracts",
-    description: "Maximize profits with our comprehensive arbitrage calculator. Compare odds and find opportunities across Kalshi, Polymarket, Robinhood, and Interactive Brokers instantly.",
-    siteName: "Event Contract Arbitrage Calculator",
-    images: [
-      {
-        url: "https://eventarb.com/thumbnail.png",
-        width: 1200,
-        height: 630,
-        alt: "Event Contract Arbitrage Calculator Dashboard",
-      }
-    ],
+    url: "/",
+    title: "Event Contract Arbitrage Calculator",
+    description,
+    siteName: "Event Arb",
+    images: [{ url: "/thumbnail.png", width: 1200, height: 630, alt: "Event Contract Arbitrage Calculator" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Event Contract Arbitrage Calculator for Kalshi, Polymarket & More | Multi-Platform Calculator",
-    description: "Find arbitrage opportunities across major platforms: Kalshi, Polymarket, Robinhood, and Interactive Brokers. Real-time calculations and market analysis.",
-    images: ["https://eventarb.com/thumbnail.png"],
-    creator: "@eventarb",
-    site: "@eventarb",
+    title: "Event Contract Arbitrage Calculator",
+    description,
+    images: ["/thumbnail.png"],
   },
-  alternates: {
-    canonical: "https://eventarb.com",
-    languages: {
-      'en-US': 'https://eventarb.com',
-    }
-  },
+  alternates: { canonical: "/" },
   category: "Finance",
-  other: {
-    "application-name": "Event Contract Arbitrage Calculator",
-    "apple-mobile-web-app-capable": "yes",
-    "apple-mobile-web-app-status-bar-style": "default",
-    "apple-mobile-web-app-title": "EventArb Calculator",
-    "format-detection": "telephone=no",
-    "msapplication-TileColor": "#000000",
-    "msapplication-config": "/browserconfig.xml",
-  },
+  applicationName: "Event Arb",
   manifest: "/manifest.json",
 };
 
@@ -121,17 +67,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
-      <head>
-        <link rel="manifest" href="/manifest.json" />
-      </head>
       <body>
         <CSPostHogProvider>
-
-        {children}
-        <Toaster />
-        <Analytics></Analytics>
+          {children}
+          <Toaster />
+          <Analytics />
         </CSPostHogProvider>
-
       </body>
     </html>
   );

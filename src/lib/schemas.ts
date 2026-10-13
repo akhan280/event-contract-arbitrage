@@ -35,6 +35,7 @@ export const subscribeSchema = z.object({
 });
 
 export const supportSchema = z.object({
-  name: z.string().trim().min(2).max(100),
-  message: z.string().trim().min(2).max(5000),
+  name: z.string().trim().min(2, "Name must be at least 2 characters.").max(100),
+  email: z.string().trim().email("Enter a valid email address.").max(254),
+  message: z.string().trim().min(2, "Message must be at least 2 characters.").max(5000),
 });

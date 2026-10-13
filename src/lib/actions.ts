@@ -5,6 +5,7 @@ import { supportSchema } from "./schemas";
 
 export async function submitSupportInquiry(input: {
   name: string;
+  email: string;
   message: string;
 }): Promise<{ response: string | null; error: string | null }> {
   const parsed = supportSchema.safeParse(input);

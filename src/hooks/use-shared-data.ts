@@ -1,29 +1,15 @@
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
-import { Market, MarketType, Opportunity } from "../lib/types";
-import { findArbitrage } from "../lib/arbitrage";
+import { CalculationInput } from "../lib/types";
 import { shareSchema } from "../lib/schemas";
 import { toast } from "../hooks/use-toast";
 
 interface SharedDataLoaderProps {
-  setMarkets: (markets: Market[]) => void;
-  setDte: (dte: number) => void;
-  setPrincipal: (principal: number) => void;
-  setOutcome: (outcome: Opportunity[] | null) => void;
-  setGlobalMarketType: (type: MarketType) => void;
-  setMarketTitle: (title: string) => void;
+  onLoad: (input: CalculationInput) => void;
   setLoading: (loading: boolean) => void;
 }
 
-export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
-  setMarkets,
-  setDte,
-  setPrincipal,
-  setOutcome,
-  setGlobalMarketType,
-  setMarketTitle,
-  setLoading,
-}) => {
+export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({ onLoad, setLoading }) => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -39,14 +25,8 @@ export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
           throw new Error(result.error || "Failed to load shared data");
         }
 
-        // Recompute the results here. Do not trust results stored with the share.
-        const data = shareSchema.parse(result.data);
-        setMarkets(data.markets);
-        setDte(data.dte);
-        setPrincipal(data.principal);
-        setGlobalMarketType(data.markets[0].type);
-        setMarketTitle(data.markets[0].title);
-        setOutcome(findArbitrage(data));
+        // onLoad recomputes the results. Do not trust results stored with the share.
+        onLoad(shareSchema.parse(result.data));
 
         toast({ title: "Share Loaded", description: "Successfully loaded shared calculation" });
       } catch (error) {
@@ -62,7 +42,7 @@ export const SharedDataLoader: React.FC<SharedDataLoaderProps> = ({
     };
 
     fetchSharedData();
-  }, [searchParams, setMarkets, setDte, setPrincipal, setOutcome, setGlobalMarketType, setMarketTitle, setLoading]);
+  }, [searchParams, onLoad, setLoading]);
 
   return null;
 };

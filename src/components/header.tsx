@@ -1,5 +1,4 @@
 import React from 'react';
-import { Coffee } from 'lucide-react';
 import Icon from "./icon";
 
 type BrokerType = 'Polymarket' | 'Kalshi' | 'Robinhood';
@@ -24,13 +23,14 @@ export default function Header() {
 
         {/* Description Section */}
         <div className="space-y-4 max-w-3xl">
-          <div className="flex flex-col gap-">
+          <div className="flex flex-col gap-4">
             <p className="text-lg text-gray-600 leading-relaxed">
               Leverage price discrepancies in prediction markets like{' '}
               <span className="inline-flex items-center gap-2">
                 {Object.entries(brokerLogos).map(([broker, logo], index) => (
                   <React.Fragment key={broker}>
                     <span className="inline-flex items-center">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={logo}
                         alt={`${broker} logo`}
@@ -46,10 +46,10 @@ export default function Header() {
                   </React.Fragment>
                 ))}
               </span>{' '}
-              <br></br>
-              <br></br>
+            </p>
+            <p className="text-lg text-gray-600 leading-relaxed">
 
-              Examine opportunity cost, spreads with fees included, and more. If this was helpful, <a className='underline' href="https://buymeacoffee.com/areebkhan2c">consider buying us a coffee</a>.
+              Compare spreads with fees included, see position size and annualized return, and share a calculation. If this helped, <a className='underline' href="https://buymeacoffee.com/areebkhan2c" target="_blank" rel="noopener noreferrer">consider buying us a coffee</a>.
               </p>
 
           </div>

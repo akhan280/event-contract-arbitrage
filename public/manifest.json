@@ -1,0 +1,9 @@
+{
+  "name": "Event Contract Arbitrage Calculator",
+  "short_name": "Event Arb",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "icons": [{ "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }]
+}
