@@ -13,12 +13,10 @@ This tool helps users identify and calculate profitable arbitrage opportunities 
 
 ## Features
 
-- Binary market arbitrage calculations
-- Multiple-choice market analysis
-- Cross-market arbitrage detection
-- Contract length and annualized ROI calculations
-- Gas fee considerations for Polymarket trades
-- Real-time profit calculations
+- Binary markets: Yes on one venue + No on another
+- Multiple-choice markets: Yes on every option, or No on every option
+- Venue fees included (see `FEE_RULES` in `src/lib/arbitrage.ts`)
+- Position size, payout, return, and simple annualized return
 
 ## Usage
 
@@ -26,6 +24,16 @@ This tool helps users identify and calculate profitable arbitrage opportunities 
 2. Enter contract prices from different markets
 3. Input principal amount and contract length (optional)
 4. View calculated arbitrage opportunities and potential profits
+
+## Development
+
+```sh
+corepack enable
+pnpm install
+pnpm dev     # http://localhost:3000
+pnpm test    # arbitrage math tests (node --test)
+pnpm lint
+```
 
 ## Market Compatibility
 
@@ -43,7 +51,7 @@ Technically can be used for anything which has corresponding markets.
 ## Best Practices
 - Verify market conditions match exactly before placing trades
 - Consider liquidity levels for better fill probability
-- Account for gas fees when trading on Polymarket
+- Check each venue's current fee schedule against `FEE_RULES`
 - Double-check all calculations before executing trades
 
 

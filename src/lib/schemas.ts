@@ -3,13 +3,16 @@ import { z } from "zod";
 const price = z.number().min(0).max(100);
 const label = z.string().max(200);
 
+// Shares made before the sell prices were removed store { buy: { yes, no }, sell }.
+const pricesSchema = z.preprocess(
+  (p) => (p && typeof p === "object" && "buy" in p ? (p as { buy: unknown }).buy : p),
+  z.object({ yes: price, no: price })
+);
+
 const optionSchema = z.object({
   id: z.string().max(64),
   name: label,
-  prices: z.object({
-    buy: z.object({ yes: price, no: price }),
-    sell: z.object({ yes: price, no: price }),
-  }),
+  prices: pricesSchema,
 });
 
 const marketSchema = z.object({
@@ -20,24 +23,11 @@ const marketSchema = z.object({
   options: z.array(optionSchema).min(1).max(20),
 });
 
-const resultSchema = z.object({
-  market: label,
-  action: z.string().max(1000),
-  profitPerContract: z.string().max(32),
-  netProfitPerContract: z.string().max(32),
-  numberOfContracts: z.number(),
-  totalNetProfit: z.string().max(32),
-  annualizedROI: z.string().max(32),
-  perContractFees: z.string().max(32),
-  perTransactionFees: z.string().max(32),
-  description: z.string().max(1000),
-});
-
+// Inputs only. The page recomputes results when it loads a share.
 export const shareSchema = z.object({
   markets: z.array(marketSchema).min(1).max(10),
   dte: z.number().int().min(0).max(3650),
   principal: z.number().min(0).max(1_000_000_000),
-  outcome: z.object({ results: z.array(resultSchema).max(500) }).nullable(),
 });
 
 export const subscribeSchema = z.object({

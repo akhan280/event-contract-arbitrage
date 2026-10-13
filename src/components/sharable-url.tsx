@@ -2,29 +2,22 @@ import React, { useState } from 'react';
 import { Button } from "@/components/ui/button";
 import { Share2, Loader2 } from "lucide-react";
 import { toast } from "../hooks/use-toast";
-import { Market, ArbitrageResponse } from "../lib/types";
+import { Market } from "../lib/types";
 
 interface ShareButtonProps {
   markets: Market[];
   dte: number;
   principal: number;
-  outcome: ArbitrageResponse | null;
 }
 
-const ShareButton: React.FC<ShareButtonProps> = ({ markets, dte, principal, outcome }) => {
+const ShareButton: React.FC<ShareButtonProps> = ({ markets, dte, principal }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleShare = async () => {
     try {
       setIsLoading(true);
       
-      const shareData = {
-        markets,
-        dte,
-        principal,
-        outcome,
-        createdAt: new Date()
-      };
+      const shareData = { markets, dte, principal };
       
       const response = await fetch('/api/share', {
         method: 'POST',
