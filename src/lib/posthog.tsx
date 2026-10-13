@@ -9,6 +9,6 @@ if (typeof window !== 'undefined') {
     person_profiles: 'identified_only',
   })
 }
-export function CSPostHogProvider({ children }: any) {
+export function CSPostHogProvider({ children }: { children: React.ReactNode }) {
     return <PostHogProvider client={posthog}>{children}</PostHogProvider>
 }
