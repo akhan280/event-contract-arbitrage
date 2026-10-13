@@ -1,41 +1,40 @@
-
-import { NextRequest } from 'next/server';
-import { Resend } from 'resend';
-import { PrismaClient } from '@prisma/client'
+import { NextRequest, NextResponse } from "next/server";
+import { Resend } from "resend";
+import { prisma } from "@/lib/prisma";
+import { subscribeSchema } from "@/lib/schemas";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-const prisma = new PrismaClient()
 
 export async function POST(req: NextRequest) {
   try {
-    const { email } = await req.json();
+    const parsed = subscribeSchema.safeParse(await req.json());
+    if (!parsed.success) {
+      return NextResponse.json({ error: "Invalid email address" }, { status: 400 });
+    }
+    const { email } = parsed.data;
 
-    const response = await resend.emails.send({
-      from: 'Arbitrage Alerts <alerts@eventarb.com>',
+    // Send the welcome email one time per address, so the form cannot flood an inbox.
+    const existing = await prisma.eventarbemails.findFirst({ where: { email } });
+    if (existing) {
+      return NextResponse.json({ message: "Subscribed successfully" });
+    }
+
+    await prisma.eventarbemails.create({ data: { email } });
+
+    await resend.emails.send({
+      from: "Event Arb <alerts@eventarb.com>",
       to: email,
-      subject: 'Welcome to Arbitrage Alerts',
+      subject: "Welcome to Event Arb",
       html: `
-        <h1>Welcome to Arbitrage Alerts!</h1>
-        <p>Thank you for subscribing. You'll receive alerts when new arbitrage opportunities become available.</p>
-        <p>If you didn't sign up for this service, please ignore this email.</p>
-      `
-    });
-    
-    const prismaResponse = await prisma.eventarbemails.create({
-      data: {
-        email: email
-      }
-    })
-
-    return new Response(JSON.stringify({ message: 'Subscribed successfully' }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
+        <h1>Welcome to Event Arb!</h1>
+        <p>Thank you for subscribing. We will email you when we ship new features.</p>
+        <p>If you did not sign up, please ignore this email.</p>
+      `,
     });
 
+    return NextResponse.json({ message: "Subscribed successfully" });
   } catch (error) {
-    return new Response(JSON.stringify({ error: 'An error occured' }), {
-      status: 500,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    console.error("Error subscribing:", error);
+    return NextResponse.json({ error: "An error occurred" }, { status: 500 });
   }
 }
