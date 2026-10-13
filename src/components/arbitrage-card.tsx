@@ -2,6 +2,7 @@ import React from "react";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { DollarSign, Info, Percent } from "lucide-react";
 import Icon from "./icon";
+import { ArbitrageResponse } from "@/lib/types";
 
 type BrokerType = "Polymarket" | "Kalshi" | "Robinhood";
 
@@ -11,7 +12,7 @@ const brokerLogos: Record<BrokerType, string> = {
   Robinhood: "/robinhood.png",
 };
 
-const ArbitrageCard = ({ result }: any) => {
+const ArbitrageCard = ({ result }: { result: ArbitrageResponse["results"][number] }) => {
   const brokers = result.market.split(" and ") as BrokerType[];
 
   return (

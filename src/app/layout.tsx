@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
@@ -89,12 +89,6 @@ export const metadata: Metadata = {
     creator: "@eventarb",
     site: "@eventarb",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 1,
-    userScalable: false,
-  },
   alternates: {
     canonical: "https://eventarb.com",
     languages: {
@@ -110,9 +104,14 @@ export const metadata: Metadata = {
     "format-detection": "telephone=no",
     "msapplication-TileColor": "#000000",
     "msapplication-config": "/browserconfig.xml",
-    "theme-color": "#000000",
   },
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#000000",
 };
 
 export default function RootLayout({
