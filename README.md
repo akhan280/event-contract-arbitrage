@@ -13,6 +13,7 @@ This tool helps users identify and calculate profitable arbitrage opportunities 
 
 ## Features
 
+- Live prices: paste a Kalshi or Polymarket link to fill in the ask prices
 - Binary markets: Yes on one venue + No on another
 - Multiple-choice markets: Yes on every option, or No on every option
 - Venue fees included (see `FEE_RULES` in `src/lib/arbitrage.ts`)
@@ -57,7 +58,8 @@ Technically can be used for anything which has corresponding markets.
 
 ## Roadmap
 - [ ] Market condition matching automation
-- [ ] Pull market list from Kalshi / Polymarket
+- [x] Pull live prices from a Kalshi / Polymarket link
+- [ ] Search markets by name and match them across venues
 - [ ] Advanced portfolio management features (alerts, etc.)
 
 ## Disclaimer

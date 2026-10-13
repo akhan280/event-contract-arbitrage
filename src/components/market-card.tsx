@@ -4,6 +4,8 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import BrokerSelect from "@/components/broker-select";
 import { Broker, Market } from "@/lib/types";
+import type { LiveQuote } from "@/lib/quotes";
+import { LinkImport } from "./link-import";
 
 const yesColors: Record<Broker, { text: string; badge: string }> = {
   Kalshi: { text: "text-[#22C55E]", badge: "bg-[#22C55E] text-white" },
@@ -21,6 +23,7 @@ interface MarketCardProps {
   onRenameOption: (optionIndex: number, name: string) => void;
   onAddOption: () => void;
   onRemoveOption: (optionIndex: number) => void;
+  onQuote: (quote: LiveQuote) => void;
 }
 
 export function MarketCard({
@@ -32,6 +35,7 @@ export function MarketCard({
   onRenameOption,
   onAddOption,
   onRemoveOption,
+  onQuote,
 }: MarketCardProps) {
   const isMulti = market.type === "multi";
 
@@ -45,6 +49,8 @@ export function MarketCard({
           </Button>
         )}
       </div>
+
+      {market.broker !== "Robinhood" && <LinkImport onQuote={onQuote} />}
 
       <div className="space-y-3">
         {market.options.map((option, index) => (
