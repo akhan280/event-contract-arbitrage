@@ -91,6 +91,11 @@ export default function Home() {
                     onRenameOption={calc.renameOption}
                     onAddOption={calc.addOption}
                     onRemoveOption={calc.removeOption}
+                    onQuote={(quote) => {
+                      const { error, notes } = calc.applyQuote(market.id, quote);
+                      if (error) toast({ variant: "destructive", title: "Prices not applied", description: error });
+                      else toast({ title: `Loaded ${quote.broker} prices`, description: notes.join(" ") || undefined });
+                    }}
                   />
                 ))}
               </div>

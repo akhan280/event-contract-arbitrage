@@ -49,7 +49,7 @@ export default function Header() {
             </p>
             <p className="text-lg text-gray-600 leading-relaxed">
 
-              Compare spreads with fees included, see position size and annualized return, and share a calculation. If this helped, <a className='underline' href="https://buymeacoffee.com/areebkhan2c" target="_blank" rel="noopener noreferrer">consider buying us a coffee</a>.
+              Paste a Kalshi or Polymarket link for live prices, compare spreads with fees included, see position size and annualized return, and share a calculation. If this helped, <a className='underline' href="https://buymeacoffee.com/areebkhan2c" target="_blank" rel="noopener noreferrer">consider buying us a coffee</a>.
               </p>
 
           </div>

@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Broker, Market, MarketType, Opportunity, Option, CalculationInput } from "@/lib/types";
 import { findArbitrage } from "@/lib/arbitrage";
+import { LiveQuote, MAX_OPTIONS } from "@/lib/quotes";
 
 const newId = () => crypto.randomUUID();
 
@@ -20,6 +21,16 @@ export const parsePrice = (value: string): number => {
   const num = parseFloat(whole + (fraction !== undefined ? "." + fraction.slice(0, 2) : "")) || 0;
   return Math.min(Math.max(num, 0), 100);
 };
+
+const norm = (name: string) => name.trim().toLowerCase();
+
+/** Finds the quote option for one of our option names: exact match first, then one name inside the other. */
+function matchOption(name: string, options: LiveQuote["options"]) {
+  const exact = options.find((o) => norm(o.name) === norm(name));
+  if (exact || !norm(name)) return exact;
+  const partial = options.filter((o) => norm(o.name).includes(norm(name)) || norm(name).includes(norm(o.name)));
+  return partial.length === 1 ? partial[0] : undefined;
+}
 
 export function useCalculator() {
   const [markets, setMarkets] = useState<Market[]>(() => [newMarket("Polymarket", "binary", "", [""])]);
@@ -81,6 +92,74 @@ export function useCalculator() {
       )
     );
 
+  /**
+   * Fills one venue card from live prices. The first card also sets the title, the type, and
+   * the option names. Returns an error, or notes for the user.
+   */
+  const applyQuote = (marketId: string, quote: LiveQuote): { error?: string; notes: string[] } => {
+    const notes: string[] = [];
+    const isFirst = markets[0].id === marketId;
+    const quoteType: MarketType = quote.options.length === 1 ? "binary" : "multi";
+    if (quote.truncated) {
+      notes.push(`Only the ${MAX_OPTIONS} most likely options are shown, so "Yes on every option" results are not safe.`);
+    }
+
+    if (isFirst) {
+      const names = quoteType === "binary" ? [""] : quote.options.map((o) => o.name);
+      if (!marketTitle.trim()) setMarketTitle(quote.title);
+      setMarketTypeState(quoteType);
+      setMarkets((ms) =>
+        ms.map((m, i) => {
+          if (i === 0) {
+            return {
+              ...m,
+              broker: quote.broker,
+              type: quoteType,
+              options: quote.options.map((o, j) => ({ id: newId(), name: names[j], prices: { yes: o.yes, no: o.no } })),
+            };
+          }
+          // Other cards keep the prices whose option still exists.
+          const keep = (name: string) =>
+            m.type !== quoteType ? undefined : quoteType === "binary" ? m.options[0]?.prices : m.options.find((o) => norm(o.name) === norm(name))?.prices;
+          return { ...m, type: quoteType, options: names.map((name) => ({ id: newId(), name, prices: keep(name) ?? { yes: 0, no: 0 } })) };
+        })
+      );
+      return { notes };
+    }
+
+    if (marketType === "binary") {
+      if (quoteType !== "binary") {
+        return { error: "This link has several options. Paste the link of one market, or switch to Multiple Choice.", notes };
+      }
+      const [{ yes, no }] = quote.options;
+      setMarkets((ms) =>
+        ms.map((m) => (m.id === marketId ? { ...m, broker: quote.broker, options: [{ ...m.options[0], prices: { yes, no } }] } : m))
+      );
+      notes.push("Check that Yes means the same thing on each venue.");
+      return { notes };
+    }
+
+    const missing = optionNames.filter((name) => !matchOption(name, quote.options));
+    const extra = quote.options.filter((o) => !optionNames.some((name) => matchOption(name, [o])));
+    if (missing.length) notes.push(`No ${quote.broker} price for: ${missing.join(", ")}.`);
+    if (extra.length) notes.push(`${quote.broker} also lists: ${extra.map((o) => o.name).join(", ")}.`);
+    setMarkets((ms) =>
+      ms.map((m) =>
+        m.id !== marketId
+          ? m
+          : {
+              ...m,
+              broker: quote.broker,
+              options: m.options.map((o) => {
+                const match = matchOption(o.name, quote.options);
+                return match ? { ...o, prices: { yes: match.yes, no: match.no } } : o;
+              }),
+            }
+      )
+    );
+    return { notes };
+  };
+
   const missingRequirement = (): string => {
     if (!marketTitle.trim()) return "Enter a market title";
     if (dte < 1) return "Days to expiration must be 1 or more";
@@ -132,6 +211,7 @@ export function useCalculator() {
     removeOption,
     renameOption,
     setPrice,
+    applyQuote,
     missingRequirement,
     calculate,
     load,
