@@ -3,10 +3,11 @@ import React, { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { Info, AlertCircle, DollarSign, Plus, Trash, AlertTriangle } from "lucide-react";
+import { AlertCircle, Plus, Trash, AlertTriangle } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ArbitrageRequest, ArbitrageResponse, Market } from "../lib/types";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Market, Opportunity } from "../lib/types";
+import { findArbitrage } from "../lib/arbitrage";
 import BrokerSelect from "@/components/broker-select";
 import Credit from "@/components/credit";
 import { AdditionalInformation } from "@/components/additional-info";
@@ -17,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../components/ui/tooltip";
-import { Label } from "../components/ui/label";
 import Header from "../components/header";
 import ArbitrageCard from "../components/arbitrage-card";
 import { toast } from "../hooks/use-toast";
@@ -35,17 +35,14 @@ const initialMarket: Market = {
     {
       id: "1",
       name: "Option 1",
-      prices: {
-        buy: { yes: 0, no: 0 },
-        sell: { yes: 0, no: 0 },
-      },
+      prices: { yes: 0, no: 0 },
     },
   ],
 };
 
 export default function Home() {
   const [markets, setMarkets] = useState<Market[]>([initialMarket]);
-  const [outcome, setOutcome] = useState<ArbitrageResponse | null>(null);
+  const [outcome, setOutcome] = useState<Opportunity[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [marketTitle, setMarketTitle] = useState("");
@@ -67,7 +64,7 @@ export default function Home() {
                   {
                     id: Math.random().toString(),
                     name: "Option 2",
-                    prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } },
+                    prices: { yes: 0, no: 0 },
                   },
                 ]
               : market.options
@@ -75,7 +72,7 @@ export default function Home() {
                 {
                   id: "1",
                   name: marketTitle,
-                  prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } },
+                  prices: { yes: 0, no: 0 },
                 },
               ],
       }))
@@ -116,7 +113,7 @@ export default function Home() {
   };
 
   const addMarket = () => {
-    const newMarket = {
+    const newMarket: Market = {
       id: Math.random().toString(),
       title: marketTitle,
       broker: "Kalshi",
@@ -127,23 +124,23 @@ export default function Home() {
               {
                 id: Math.random().toString(),
                 name: marketTitle,
-                prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } },
+                prices: { yes: 0, no: 0 },
               },
             ]
           : markets[0].options.map((option) => ({
               id: Math.random().toString(),
               name: option.name,
-              prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } },
+              prices: { yes: 0, no: 0 },
             })),
     };
     setMarkets([...markets, newMarket]);
   };
 
-  const addOption = (marketId: string) => {
+  const addOption = () => {
     const newOption = {
       id: Math.random().toString(),
       name: `Option ${markets[0].options.length + 1}`,
-      prices: { buy: { yes: 0, no: 0 }, sell: { yes: 0, no: 0 } },
+      prices: { yes: 0, no: 0 },
     };
 
     setMarkets(
@@ -154,7 +151,7 @@ export default function Home() {
     );
   };
 
-  const removeOption = (marketId: string, optionIndex: number) => {
+  const removeOption = (optionIndex: number) => {
     setMarkets(
       markets.map((market) => ({
         ...market,
@@ -163,30 +160,21 @@ export default function Home() {
     );
   };
 
-  const getMissingRequirements = (markets: Market[]) => {
-    if (!markets.some((m) => m.title)) {
-      return "Please enter a market title";
-    }
-    console.log("Current dte", dte)
+  const hasAnyPrice = markets.some((m) =>
+    m.options.some((o) => o.prices.yes > 0 || o.prices.no > 0)
+  );
 
-    if (dte < 1) {
-      return "Days to expiration must be 1 or greater";
-    }
-    if (principal <= 0) {
-      return "Principal amount must be greater than 0";
-    }
+  const getMissingRequirement = (): string => {
+    if (!marketTitle.trim()) return "Please enter a market title";
+    if (dte < 1) return "Days to expiration must be 1 or greater";
+    if (principal <= 0) return "Principal amount must be greater than 0";
+    if (!hasAnyPrice) return "Please enter at least one price";
     if (
-      !markets.some((m) =>
-        m.options.some(
-          (o) =>
-            o.prices.buy.yes > 0 ||
-            o.prices.buy.no > 0 ||
-            o.prices.sell.yes > 0 ||
-            o.prices.sell.no > 0
-        )
-      )
+      globalMarketType === "multi" &&
+      new Set(markets[0].options.map((o) => o.name.trim().toLowerCase())).size !==
+        markets[0].options.length
     ) {
-      return "Please enter at least one price";
+      return "Each option needs a different name";
     }
     return "";
   };
@@ -194,136 +182,63 @@ export default function Home() {
   const updateOptionPrice = (
     marketId: string,
     optionId: string,
-    type: "buy" | "sell",
     side: "yes" | "no",
     value: string
   ) => {
     const numValue = formatNumberInput(value);
     setMarkets(
-      markets.map((market) => {
-        if (market.id === marketId) {
-          return {
-            ...market,
-            options: market.options.map((option) => {
-              if (option.id === optionId) {
-                return {
-                  ...option,
-                  prices: {
-                    ...option.prices,
-                    [type]: { ...option.prices[type], [side]: numValue },
-                  },
-                };
-              }
-              return option;
-            }),
-          };
-        }
-        return market;
-      })
+      markets.map((market) =>
+        market.id !== marketId
+          ? market
+          : {
+              ...market,
+              options: market.options.map((option) =>
+                option.id !== optionId
+                  ? option
+                  : { ...option, prices: { ...option.prices, [side]: numValue } }
+              ),
+            }
+      )
     );
   };
 
-  const handleCalculate = async () => {
-    const validationErrors = validateInputs();
-    console.log("[HandleCalculate]", validationErrors)
-    if (validationErrors.length > 0) {
-      validationErrors.forEach((error) => {
-        toast({
-          variant: "destructive",
-          title: "Missing Requirements",
-          description: error,
-        });
-      });
+  const handleCalculate = () => {
+    const missing = getMissingRequirement();
+    if (missing) {
+      toast({ variant: "destructive", title: "Missing Requirements", description: missing });
       return;
     }
 
-    setLoading(true);
     setError("");
-    
     try {
-      const marketData: Market[] = markets.map((market) => ({
-        id: market.id,
-        title: market.title,
-        broker: market.broker,
-        type: market.type,
-        options: market.options.map((option) => ({
-          id: option.id,
-          name: market.type === "binary" ? marketTitle : option.name,
-          prices: option.prices,
-        })),
-      }));
-
-      const response = await fetch("/api/calculateArbitrage", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          markets: marketData,
-          dte: dte,
-          principal: principal,
-        } as ArbitrageRequest),
-      });
-
-      const data = await response.json();
-      setOutcome(data.data as ArbitrageResponse);
-      
-      if (data.data.results.length === 0) {
+      const results = findArbitrage({ markets, dte, principal });
+      setOutcome(results);
+      if (results.length === 0) {
         toast({
           title: "No Arbitrage Found",
-          description: "No profitable arbitrage opportunities were found with the current prices.",
-          variant: "default",
+          description: "No profitable trades after fees at these prices.",
         });
       }
     } catch (err) {
+      console.error(err);
       setError("Failed to calculate arbitrage. Please check your input values.");
-      toast({
-        variant: "destructive",
-        title: "Calculation Error",
-        description: "Failed to calculate arbitrage. Please check your input values.",
-      });
     }
-    
-    setLoading(false);
-  };
-
-  const validateInputs = (): string[] => {
-    const errors: string[] = [];
-    
-    if (!markets.some((m) => m.title)) {
-      errors.push("Please enter a market title");
-    }
-    
-    if (dte < 1) {
-      errors.push("Days to expiration must be 0 or greater");
-    }
-    
-    if (principal <= 0) {
-      errors.push("Principal amount must be greater than 0");
-    }
-    
-    if (!markets.some((m) => 
-      m.options.some(
-        (o) =>
-          o.prices.buy.yes > 0 ||
-          o.prices.buy.no > 0 ||
-          o.prices.sell.yes > 0 ||
-          o.prices.sell.no > 0
-      )
-    )) {
-      errors.push("Please enter at least onw price");
-    }
-    return errors;
   };
 
   return (
     <>
-      <SharedDataLoader
+      {/* useSearchParams needs its own boundary, or the whole page renders only on the client. */}
+      <Suspense fallback={null}>
+        <SharedDataLoader
         setMarkets={setMarkets}
         setDte={setDte}
         setPrincipal={setPrincipal}
         setOutcome={setOutcome}
+        setGlobalMarketType={setGlobalMarketType}
         setMarketTitle={setMarketTitle}
         setLoading={setLoading}
-      />
+        />
+      </Suspense>
       {loading ? <Loading /> : (
 
       <div className="flex flex-col sm:grid sm:grid-cols-[30%_70%] min-h-screen sm:h-screen sm:overflow-hidden">
@@ -368,12 +283,7 @@ export default function Home() {
                   >
                     <div className="space-y-4">
                       <BrokerSelect
-                        value={
-                          market.broker as
-                            | "Polymarket"
-                            | "Kalshi"
-                            | "Robinhood"
-                        }
+                        value={market.broker}
                         onChange={(value) =>
                           setMarkets(
                             markets.map((m) =>
@@ -417,12 +327,6 @@ export default function Home() {
                         </div>
                       </div>
 
-                      <Tabs defaultValue="buy">
-                        {/* <TabsList>
-                    <TabsTrigger value="buy">Buy Prices</TabsTrigger>
-                    <TabsTrigger value="sell">Sell Prices</TabsTrigger>
-                  </TabsList> */}
-                        <TabsContent value="buy">
                           <div className="space-y-4">
                             {market.options.map((option) => (
                               <div key={option.id} className="space-y-2">
@@ -456,12 +360,11 @@ export default function Home() {
                                       step="0.01"
                                       min="0"
                                       max="100"
-                                      value={option.prices.buy.yes || ""}
+                                      value={option.prices.yes || ""}
                                       onChange={(e) =>
                                         updateOptionPrice(
                                           market.id,
                                           option.id,
-                                          "buy",
                                           "yes",
                                           e.target.value
                                         )
@@ -493,12 +396,11 @@ export default function Home() {
                                       step="0.01"
                                       min="0"
                                       max="100"
-                                      value={option.prices.buy.no || ""}
+                                      value={option.prices.no || ""}
                                       onChange={(e) =>
                                         updateOptionPrice(
                                           market.id,
                                           option.id,
-                                          "buy",
                                           "no",
                                           e.target.value
                                         )
@@ -521,10 +423,7 @@ export default function Home() {
                                             market.options.findIndex(
                                               (o) => o.id === option.id
                                             );
-                                          removeOption(
-                                            market.id,
-                                            optionIndex
-                                          );
+                                          removeOption(optionIndex);
                                         }}
                                       >
                                         <Trash className="h-4 w-4" />
@@ -537,7 +436,7 @@ export default function Home() {
                             {market.type === "multi" && index === 0 && (
                               <div className="flex items-center justify-center pt-8">
                                 <Button
-                                  onClick={() => addOption(market.id)}
+                                  onClick={addOption}
                                   variant="outline"
                                   className=""
                                 >
@@ -547,73 +446,6 @@ export default function Home() {
                               </div>
                             )}
                           </div>
-
-                        </TabsContent>
-
-                        <TabsContent value="sell">
-                          <div className="space-y-4">
-                            {market.options.map((option) => (
-                              <div key={option.id} className="space-y-2">
-                                <div className="flex items-center gap-4">
-                                  <div className="relative flex-1">
-                                    <Input
-                                      value={option.name}
-                                      disabled
-                                      className="mb-2"
-                                    />
-                                  </div>
-                                  <div className="relative flex-1">
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      min="0"
-                                      max="100"
-                                      value={option.prices.sell.yes || ""}
-                                      onChange={(e) =>
-                                        updateOptionPrice(
-                                          market.id,
-                                          option.id,
-                                          "sell",
-                                          "yes",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="pr-6"
-                                      placeholder="Yes Price"
-                                    />
-                                    <span className="absolute right-2 top-1/2 -translate-y-1/2">
-                                      ¢
-                                    </span>
-                                  </div>
-                                  <div className="relative flex-1">
-                                    <Input
-                                      type="number"
-                                      step="0.01"
-                                      min="0"
-                                      max="100"
-                                      value={option.prices.sell.no || ""}
-                                      onChange={(e) =>
-                                        updateOptionPrice(
-                                          market.id,
-                                          option.id,
-                                          "sell",
-                                          "no",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="pr-6"
-                                      placeholder="No Price"
-                                    />
-                                    <span className="absolute right-2 top-1/2 -translate-y-1/2">
-                                      ¢
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </TabsContent>
-                      </Tabs>
                     </div>
                   </Card>
                 ))}
@@ -635,26 +467,15 @@ export default function Home() {
                       <div className="w-full">
                         <Button
                           onClick={handleCalculate}
-                          disabled={loading}
                           className="w-full"
                         >
-                          {loading ? "Calculating..." : "Calculate Arbitrage"}
+                          Calculate Arbitrage
                         </Button>
                       </div>
                     </TooltipTrigger>
-                    {(loading || !markets.some((m) => m.title && m.options.some((o) =>
-                              o.prices.buy.yes > 0 ||
-                              o.prices.buy.no > 0 ||
-                              o.prices.sell.yes > 0 ||
-                              o.prices.sell.no > 0
-                          )
-                      )) && (
+                    {getMissingRequirement() && (
                       <TooltipContent>
-                        <p>
-                          {loading
-                            ? "Calculating..."
-                            : getMissingRequirements(markets)}
-                        </p>
+                        <p>{getMissingRequirement()}</p>
                       </TooltipContent>
                     )}
                   </Tooltip>
@@ -665,7 +486,6 @@ export default function Home() {
                   markets={markets}
                   dte={dte}
                   principal={principal}
-                  outcome={outcome}
               />
 
               {error && (
@@ -676,7 +496,7 @@ export default function Home() {
               )}
 
               </div>
-              {outcome && (
+              {outcome && outcome.length > 0 && (
                 <div className="space-y-6">
                   <div className="text-lg font-medium">Arbitrage Opportunities</div>
                   
@@ -687,12 +507,10 @@ export default function Home() {
                     </AlertDescription>
                   </Alert>
 
-                  <div className="grid grid-cols-2 gap-4">
-                    {outcome.results.length > 0 ? (
-                      outcome.results.map((result, index) => (
-                        <ArbitrageCard key={index} result={result} />
-                      ))
-                    ) : null}
+                  <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+                    {outcome.map((opportunity) => (
+                      <ArbitrageCard key={opportunity.id} opportunity={opportunity} dte={dte} />
+                    ))}
                   </div>
                 </div>
               )}
