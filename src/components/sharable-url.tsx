@@ -41,7 +41,7 @@ const ShareButton: React.FC<ShareButtonProps> = ({ markets, dte, principal, outc
       
       toast({
         title: "Share link copied!",
-        description: "The link has been copied to your clipboard. It will expire in 24 hours.",
+        description: "The link has been copied to your clipboard. It will expire in 72 hours.",
         variant: "default",
       });
     } catch (error) {

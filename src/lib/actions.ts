@@ -1,42 +1,23 @@
-"use server"
+"use server";
 
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "./prisma";
+import { supportSchema } from "./schemas";
 
-const prisma = new PrismaClient();
-export async function submitSupportInquiry({
-  name,
-  message,
-}: {
+export async function submitSupportInquiry(input: {
   name: string;
   message: string;
 }): Promise<{ response: string | null; error: string | null }> {
-    console.log(name, message);
-    if (!name || !message) {
-        return {
-            response: null,
-            error: "Invalid inputs",
-        };
-    }
+  const parsed = supportSchema.safeParse(input);
+  if (!parsed.success) {
+    return { response: null, error: "Invalid inputs" };
+  }
 
-    try {
-        const data = await prisma.eventArbSupportRequests.create({
-            data: {
-                name: name,
-                message: message,
-            },
-        });
-        console.log(data, "support requests");
-    } catch (e) {
-        console.log("[ACTION] Submit Support Inquiry Error", e);
-        return {
-            response: null,
-            error: "An error occured",
-        };
-    }
+  try {
+    await prisma.eventArbSupportRequests.create({ data: parsed.data });
+  } catch (e) {
+    console.error("[ACTION] Submit Support Inquiry Error", e);
+    return { response: null, error: "An error occurred" };
+  }
 
-    return {
-        response: "Successfully submitted support request",
-        error: null,
-    };
+  return { response: "Successfully submitted support request", error: null };
 }
-
